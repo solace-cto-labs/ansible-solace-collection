@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2022, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -17,8 +17,10 @@ short_description: get list of protected headers on rdp queue binding
 description:
 - "Get a list of Protected Headers on a Queue Binding object on a Rest Delivery Point object."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/software-broker/config/index.html#/restDeliveryPoint/getMsgVpnRestDeliveryPointQueueBindingProtectedRequestHeaders"
-- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/software-broker/monitor/index.html#/restDeliveryPoint/getMsgVpnRestDeliveryPointQueueBindingProtectedRequestHeaders"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/software-broker/config/index.html#/restDeliveryPoint/\
+  getMsgVpnRestDeliveryPointQueueBindingProtectedRequestHeaders"
+- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/software-broker/monitor/index.html#/restDeliveryPoint/\
+  getMsgVpnRestDeliveryPointQueueBindingProtectedRequestHeaders"
 options:
   rdp_name:
     description: The name of the Rest Delivery Point. Maps to 'restDeliveryPointName' in the API.
@@ -33,12 +35,12 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.vpn
 - solace.pubsub_plus.solace.get_list
 seealso:
-- module: solace_rdp
-- module: solace_queue
-- module: solace_rdp_queue_binding
-- module: solace_rdp_queue_binding_protected_header
-- module: solace_get_rdp_queue_binding_headers
-- module: solace_get_rdp_queue_binding_protected_headers
+- module: solace.pubsub_plus.solace_rdp
+- module: solace.pubsub_plus.solace_queue
+- module: solace.pubsub_plus.solace_rdp_queue_binding
+- module: solace.pubsub_plus.solace_rdp_queue_binding_protected_header
+- module: solace.pubsub_plus.solace_get_rdp_queue_binding_headers
+- module: solace.pubsub_plus.solace_get_rdp_queue_binding_protected_headers
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -103,7 +105,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible.module_utils.basic import AnsibleModule

@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -33,10 +33,13 @@ def strtobool(val):
 _PY3_MIN = sys.version_info[:2] >= (3, 6)
 if not _PY3_MIN:
     current_version = ''.join(sys.version.splitlines())
-    print(
-        f'{{"failed": true, "rc": {_SC_SYSTEM_ERR_RC}, "msg_hint": "Set ANSIBLE_PYTHON_INTERPRETER=path-to-python-3", "msg": "solace.pubsub_plus requires a minimum of Python3 version 3.6. Current version: {current_version}."}}'
+    # emitted at import time, before an AnsibleModule exists, so exit_json/fail_json
+    # are unavailable - print Ansible-parseable JSON and exit is the only option here
+    print(  # pylint: disable=ansible-bad-function
+        f'{{"failed": true, "rc": {_SC_SYSTEM_ERR_RC}, "msg_hint": "Set ANSIBLE_PYTHON_INTERPRETER=path-to-python-3", "'
+        f'msg": "solace.pubsub_plus requires a minimum of Python3 version 3.6. Current version: {current_version}."}}'
     )
-    sys.exit(1)
+    sys.exit(1)  # pylint: disable=ansible-bad-function
 
 ################################################################################################
 # initialize logging

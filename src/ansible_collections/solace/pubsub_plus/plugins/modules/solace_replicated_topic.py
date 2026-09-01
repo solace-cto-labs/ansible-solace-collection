@@ -30,8 +30,8 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state
 seealso:
-- module: solace_get_replicated_topics
-- module: solace_replicated_topics
+- module: solace.pubsub_plus.solace_get_replicated_topics
+- module: solace.pubsub_plus.solace_replicated_topics
 author:
 - Paulus Gunadi (@pjgunadi)
 '''
@@ -83,7 +83,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_utils import SolaceUtils
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api

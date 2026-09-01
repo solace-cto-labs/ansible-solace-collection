@@ -4,3 +4,5 @@ gh-pages
 *.tar.gz
 old*
 .devel-stash
+.claude/
+.venv-ans/

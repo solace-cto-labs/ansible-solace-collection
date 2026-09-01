@@ -1,14 +1,21 @@
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
 import traceback
 __metaclass__ = type
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_utils import SolaceUtils
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceCloudApiResponseDataError, SolaceInternalError, SolaceInternalErrorAbstractMethod, SolaceApiError, SolaceMaxSempv2VersionSupportedError, SolaceModuleUsageError, SolaceParamsValidationError, SolaceError, SolaceFeatureNotSupportedError, SolaceSempv1VersionNotSupportedError, SolaceNoModuleSupportForSolaceCloudError, SolaceNoModuleStateSupportError, SolaceMinSempv2VersionSupportedError
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskConfig, SolaceTaskBrokerConfig, SolaceTaskSolaceCloudServiceConfig, SolaceTaskSolaceCloudConfig
+from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import (
+    SolaceCloudApiResponseDataError, SolaceInternalError, SolaceInternalErrorAbstractMethod,
+    SolaceApiError, SolaceMaxSempv2VersionSupportedError, SolaceModuleUsageError,
+    SolaceParamsValidationError, SolaceError, SolaceFeatureNotSupportedError,
+    SolaceSempv1VersionNotSupportedError, SolaceNoModuleSupportForSolaceCloudError,
+    SolaceNoModuleStateSupportError, SolaceMinSempv2VersionSupportedError)
+from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import (
+    SolaceTaskConfig, SolaceTaskBrokerConfig, SolaceTaskSolaceCloudServiceConfig,
+    SolaceTaskSolaceCloudConfig)
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceApi, SolaceSempV2Api, SolaceCloudApi, SolaceSempV2PagingGetApi
 from ansible.module_utils.basic import AnsibleModule
 import logging
@@ -168,7 +175,8 @@ class SolaceTask(object):
                 if http_resp.status_code in [404, 501]:
                     usr_msg_update = {
                         'hint': {
-                            "possible reason: resource not configured or blocked on the reverse proxy/api gateway. see ansible-solace log file for HTTP call details."
+                            "possible reason: resource not configured or blocked on the "
+                            "reverse proxy/api gateway. see ansible-solace log file for HTTP call details."
                         }
                     }
                     usr_msg.update(usr_msg_update)

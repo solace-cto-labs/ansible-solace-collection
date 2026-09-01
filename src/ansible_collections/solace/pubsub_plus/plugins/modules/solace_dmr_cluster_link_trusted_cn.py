@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['deprecated'],
                     'supported_by': 'community'}
 
 DOCUMENTATION = '''
@@ -16,8 +16,13 @@ module: solace_dmr_cluster_link_trusted_cn
 short_description: trusted common name for dmr cluster link
 description:
 - "Allows addition, removal and configuration of Trusted Common Name Objects on DMR Cluster links."
+deprecated:
+  removed_in: 2.0.0
+  why: "The broker deprecated TLS Trusted Common Names in favor of Certificate Matching Rules."
+  alternative: "Use M(solace.pubsub_plus.solace_dmr_cluster_cert_matching_rule) and its condition/attribute-filter modules instead."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/dmrCluster/createDmrClusterLinkTlsTrustedCommonName"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/dmrCluster/\
+  createDmrClusterLinkTlsTrustedCommonName"
 options:
   name:
     description: The expected trusted common name of the remote certificate. Maps to 'tlsTrustedCommonName' in the API.
@@ -37,9 +42,9 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state
 seealso:
-- module: solace_dmr_cluster
-- module: solace_dmr_cluster_link
-- module: solace_get_dmr_cluster_link_trusted_cns
+- module: solace.pubsub_plus.solace_dmr_cluster
+- module: solace.pubsub_plus.solace_dmr_cluster_link
+- module: solace.pubsub_plus.solace_get_dmr_cluster_link_trusted_cns
 author:
   - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -94,7 +99,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig

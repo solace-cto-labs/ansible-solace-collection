@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -8,7 +8,9 @@ __metaclass__ = type
 from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_utils import SolaceUtils
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_consts import SolaceTaskOps
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceCloudApiError, SolaceCloudApiResponseDataError, SolaceEnvVarError, SolaceError, SolaceInternalErrorAbstractMethod, SolaceApiError, SolaceParamsValidationError
+from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import (
+    SolaceCloudApiError, SolaceCloudApiResponseDataError, SolaceEnvVarError, SolaceError,
+    SolaceInternalErrorAbstractMethod, SolaceApiError, SolaceParamsValidationError)
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceInternalError
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskConfig, SolaceTaskBrokerConfig, SolaceTaskSolaceCloudConfig
 from ansible.module_utils.basic import AnsibleModule
@@ -180,7 +182,7 @@ class SolaceApi(object):
 
     @staticmethod
     def compose_path(path_array, safe=','):
-        if not type(path_array) is list:
+        if not isinstance(path_array, list):
             raise TypeError(
                 f"argument 'path_array' is not an array but {type(path_array)}")
         # ensure elements are 'url encoded'
@@ -540,8 +542,21 @@ class SolaceSempV1PagingGetApi(SolaceSempV1Api):
 class SolaceCloudApi(SolaceApi):
 
     ENV_VAR_ANSIBLE_SOLACE_SOLACE_CLOUD_HOME = "ANSIBLE_SOLACE_SOLACE_CLOUD_HOME"
+    ENV_VAR_ANSIBLE_SOLACE_SOLACE_CLOUD_STATIC_IP = "ANSIBLE_SOLACE_SOLACE_CLOUD_STATIC_IP"
     ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_US = "us"
     ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_AU = "au"
+    ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_EU = "eu"
+    ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_SG = "sg"
+    # region -> dynamic API host. The static-IP (fixed egress IP) endpoints use the
+    # same host with a 'static-ip-' prefix, e.g. static-ip-api.solace.cloud.
+    SOLACE_CLOUD_API_HOSTS = {
+        ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_US: "api.solace.cloud",
+        ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_AU: "api.solacecloud.com.au",
+        ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_EU: "api.solacecloud.eu",
+        ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_SG: "api.solacecloud.sg",
+    }
+    SOLACE_CLOUD_API_PATH_SUFFIX = "/api/v0"
+    # retained for backwards compatibility with any external references
     API_BASE_PATH_US = "https://api.solace.cloud/api/v0"
     API_BASE_PATH_AU = "https://api.solacecloud.com.au/api/v0"
 
@@ -554,27 +569,36 @@ class SolaceCloudApi(SolaceApi):
         super().__init__(module)
         return
 
-    def get_api_base_path(self, config: SolaceTaskSolaceCloudConfig) -> str:
-        solace_cloud_home_value = self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_US
-
+    def _get_solace_cloud_home(self, config: SolaceTaskSolaceCloudConfig) -> str:
+        # the module option takes precedence (already validated by the argspec
+        # choices), then the env var, then default to 'us'.
         if config.solace_cloud_home is not None and config.solace_cloud_home != '':
-            solace_cloud_home_value = config.solace_cloud_home.lower()
-        else:
-            solaceCloudHomeEnvVal = os.getenv(
-                self.ENV_VAR_ANSIBLE_SOLACE_SOLACE_CLOUD_HOME)
-            if solaceCloudHomeEnvVal is not None and solaceCloudHomeEnvVal != '':
-                if solaceCloudHomeEnvVal.lower() == self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_US:
-                    solace_cloud_home_value = self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_US
-                elif solaceCloudHomeEnvVal.lower() == self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_AU:
-                    solace_cloud_home_value = self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_AU
-                else:
-                    raise SolaceEnvVarError(self.ENV_VAR_ANSIBLE_SOLACE_SOLACE_CLOUD_HOME,
-                                            solaceCloudHomeEnvVal,
-                                            f"allowed values: {self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_US}, {self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_AU}")
-        if solace_cloud_home_value == self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_US:
-            return self.API_BASE_PATH_US
-        else:
-            return self.API_BASE_PATH_AU
+            return config.solace_cloud_home.lower()
+        env_val = os.getenv(self.ENV_VAR_ANSIBLE_SOLACE_SOLACE_CLOUD_HOME)
+        if env_val is None or env_val == '':
+            return self.ANSIBLE_SOLACE_SOLACE_CLOUD_HOME_US
+        region = env_val.lower()
+        if region not in self.SOLACE_CLOUD_API_HOSTS:
+            raise SolaceEnvVarError(
+                self.ENV_VAR_ANSIBLE_SOLACE_SOLACE_CLOUD_HOME, env_val,
+                f"allowed values: {', '.join(sorted(self.SOLACE_CLOUD_API_HOSTS))}")
+        return region
+
+    def _use_solace_cloud_static_ip(self, config: SolaceTaskSolaceCloudConfig) -> bool:
+        # the module option takes precedence, then the env var, then False.
+        option = getattr(config, 'solace_cloud_static_ip', None)
+        if option is not None:
+            return bool(option)
+        env_val = os.getenv(self.ENV_VAR_ANSIBLE_SOLACE_SOLACE_CLOUD_STATIC_IP)
+        if env_val is None or env_val == '':
+            return False
+        return env_val.strip().lower() in ('1', 'true', 'yes', 'on')
+
+    def get_api_base_path(self, config: SolaceTaskSolaceCloudConfig) -> str:
+        host = self.SOLACE_CLOUD_API_HOSTS[self._get_solace_cloud_home(config)]
+        if self._use_solace_cloud_static_ip(config):
+            host = "static-ip-" + host
+        return f"https://{host}{self.SOLACE_CLOUD_API_PATH_SUFFIX}"
 
     def get_auth(self, config: SolaceTaskBrokerConfig) -> str:
         return config.get_solace_cloud_auth()
@@ -1011,3 +1035,195 @@ class SolaceCloudApiCertAuthority(SolaceCloudApi):
         resp = self.get_object_settings(config, path_array)
         cert_authority = resp['certificate']
         return self.filter(cert_authority, query_params)
+
+
+class SolaceCloudApiV2(SolaceCloudApi):
+    """Accessor for the Solace PubSub+ Cloud v2 REST APIs.
+
+    Reference: https://api.solace.dev/cloud/reference/using-the-v2-rest-apis-for-pubsub-cloud
+
+    The v2 APIs reuse the same regional hosts, static-IP endpoints and Bearer-token
+    authentication as the v0 API (inherited from SolaceCloudApi). They differ in:
+    - base path: '/api/v2' instead of '/api/v0'
+    - successful responses are wrapped in a '{"data": ..., "meta": ...}' envelope;
+      this class returns the unwrapped 'data' element.
+    """
+
+    SOLACE_CLOUD_API_PATH_SUFFIX_V2 = "/api/v2"
+
+    # API groups / resources
+    API_MISSION_CONTROL = "missionControl"
+    API_EVENT_BROKER_SERVICES = "eventBrokerServices"
+    API_CLIENT_PROFILES = "clientProfiles"
+    API_CONNECTION_ENDPOINTS = "connectionEndpoints"
+    API_DNS_NAMES = "dnsNames"
+
+    def __init__(self, module: AnsibleModule):
+        super().__init__(module)
+        return
+
+    def get_api_base_path(self, config: SolaceTaskSolaceCloudConfig) -> str:
+        # https://{host}/api/v2  (honours the region and static-ip options, same as v0)
+        host = self.SOLACE_CLOUD_API_HOSTS[self._get_solace_cloud_home(config)]
+        if self._use_solace_cloud_static_ip(config):
+            host = "static-ip-" + host
+        return f"https://{host}{self.SOLACE_CLOUD_API_PATH_SUFFIX_V2}"
+
+    def get_mission_control_base_path_array(self, config: SolaceTaskSolaceCloudConfig) -> list:
+        # [https://{host}/api/v2, missionControl]
+        return [self.get_api_base_path(config), self.API_MISSION_CONTROL]
+
+    def handle_response(self, resp, module_op):
+        # v2: 200 (get/patch), 201 (create), 202 (accepted, async operation), 204 (no content, delete)
+        if resp.status_code not in [200, 201, 202, 204]:
+            self.handle_bad_response(resp, module_op)
+        return self.handle_good_response(resp, module_op)
+
+    def handle_good_response(self, resp, module_op):
+        # v2 wraps payloads in {"data": ..., "meta": ...}; return the 'data' element.
+        # fall back to the full body if there is no envelope.
+        if resp.text:
+            j = resp.json()
+            if isinstance(j, dict) and 'data' in j:
+                return j['data']
+            return j
+        return {}
+
+    def get_object_settings(self, config: SolaceTaskSolaceCloudConfig, path_array: list, query_params=None) -> dict:
+        # returns the unwrapped 'data' object, or None if not found (404)
+        module_op = SolaceTaskOps.OP_READ_OBJECT
+        try:
+            return self.make_get_request(config, path_array, module_op, query_params=query_params)
+        except SolaceApiError as e:
+            resp = e.get_resp()
+            if resp['status_code'] == 404:
+                return None
+            raise SolaceApiError(e.get_http_resp(), resp,
+                                 self.get_module()._name, module_op) from e
+
+    def get_event_broker_service(self, config: SolaceTaskSolaceCloudConfig, service_id: str) -> dict:
+        # GET /api/v2/missionControl/eventBrokerServices/{id}
+        # returns the service or None if not found
+        path_array = self.get_mission_control_base_path_array(
+            config) + [self.API_EVENT_BROKER_SERVICES, service_id]
+        return self.get_object_settings(config, path_array)
+
+    def get_event_broker_services(self, config: SolaceTaskSolaceCloudConfig, query_params=None) -> list:
+        # GET /api/v2/missionControl/eventBrokerServices
+        # NOTE: v2 list responses are paginated (see 'meta.pagination'); this returns the
+        # page addressed by query_params (first page by default). Pass query_params
+        # {'pageSize': N, 'pageNumber': M} to page through larger result sets.
+        module_op = SolaceTaskOps.OP_READ_OBJECT_LIST
+        path_array = self.get_mission_control_base_path_array(
+            config) + [self.API_EVENT_BROKER_SERVICES]
+        try:
+            resp = self.make_get_request(
+                config, path_array, module_op, query_params=query_params)
+        except SolaceApiError as e:
+            _resp = e.get_resp()
+            if _resp['status_code'] == 404:
+                return []
+            raise SolaceApiError(e.get_http_resp(), _resp,
+                                 self.get_module()._name, module_op) from e
+        if isinstance(resp, dict):
+            return [resp]
+        return resp
+
+    # ---------------------------------------------------------------------
+    # async operations
+    # v2 long-running requests return an 'operation' resource; poll it at
+    # GET /eventBrokerServices/{serviceId}/operations/{operationId} until the
+    # status is SUCCEEDED or FAILED.
+    # ---------------------------------------------------------------------
+    API_OPERATIONS = "operations"
+    OPERATION_STATUS_SUCCEEDED = "SUCCEEDED"
+    OPERATION_STATUS_FAILED = "FAILED"
+
+    def _is_operation(self, resp) -> bool:
+        return (isinstance(resp, dict)
+                and resp.get('type') == 'operation'
+                and 'id' in resp and 'status' in resp)
+
+    def get_operation(self, config: SolaceTaskSolaceCloudConfig, service_id: str, operation_id: str) -> dict:
+        # GET /api/v2/missionControl/eventBrokerServices/{serviceId}/operations/{operationId}
+        path_array = self.get_mission_control_base_path_array(config) + [
+            self.API_EVENT_BROKER_SERVICES, service_id, self.API_OPERATIONS, operation_id]
+        return self.make_get_request(config, path_array, SolaceTaskOps.OP_READ_OBJECT)
+
+    def wait_for_operation(self, config: SolaceTaskSolaceCloudConfig, operation: dict, timeout_minutes: int, service_id: str = None) -> dict:
+        # operations are always polled under the event broker service. for a service-level
+        # operation (e.g. create) the operation's resourceId IS the serviceId; for a
+        # sub-resource operation (client profile, dns name, ...) the resourceId is the
+        # sub-resource path, so the caller must pass the owning service_id explicitly.
+        module_op = SolaceTaskOps.OP_READ_OBJECT
+        if not service_id:
+            service_id = operation.get('resourceId')
+        operation_id = operation.get('id')
+        if not service_id or not operation_id:
+            raise SolaceApiError(None, dict(
+                msg="cannot poll solace cloud operation: missing resourceId/id", operation=operation),
+                self.get_module()._name, module_op)
+        is_done = False
+        is_failed = False
+        try_count = -1
+        delay = 30  # seconds
+        max_retries = (timeout_minutes * 60) // delay
+        resp = operation
+        while not is_done and not is_failed and try_count < max_retries:
+            try:
+                resp = self.get_operation(config, service_id, operation_id)
+            except SolaceApiError as e:
+                # once a service (or sub-resource owner) is deleted, its operations
+                # endpoint 404s. For a delete operation that means it completed.
+                if e.get_resp().get('status_code') == 404:
+                    is_done = True
+                    break
+                raise
+            status = resp.get('status')
+            is_done = (status == self.OPERATION_STATUS_SUCCEEDED)
+            is_failed = (status == self.OPERATION_STATUS_FAILED)
+            try_count += 1
+            if not is_done and not is_failed and timeout_minutes > 0:
+                time.sleep(delay)
+        if is_failed:
+            raise SolaceApiError(None, dict(
+                msg="solace cloud operation failed", operation=resp),
+                self.get_module()._name, module_op)
+        if not is_done:
+            raise SolaceApiError(None, dict(
+                msg=f"timeout waiting for solace cloud operation to complete, timeout(mins)={timeout_minutes}", operation=resp),
+                self.get_module()._name, module_op)
+        return resp
+
+    def _maybe_wait_for_operation(self, config: SolaceTaskSolaceCloudConfig, resp, wait_timeout_minutes: int, service_id: str = None):
+        # if the response is an async operation and waiting is requested, poll to completion
+        if wait_timeout_minutes and wait_timeout_minutes > 0 and self._is_operation(resp):
+            return self.wait_for_operation(config, resp, wait_timeout_minutes, service_id)
+        return resp
+
+    # ---------------------------------------------------------------------
+    # event broker service CRUD (v2)
+    # ---------------------------------------------------------------------
+    def create_service(self, config: SolaceTaskSolaceCloudConfig, data: dict, wait_timeout_minutes: int = 0) -> dict:
+        # POST /api/v2/missionControl/eventBrokerServices
+        module_op = SolaceTaskOps.OP_CREATE_OBJECT
+        path_array = self.get_mission_control_base_path_array(
+            config) + [self.API_EVENT_BROKER_SERVICES]
+        resp = self.make_post_request(config, path_array, data, module_op)
+        return self._maybe_wait_for_operation(config, resp, wait_timeout_minutes)
+
+    def delete_service(self, config: SolaceTaskSolaceCloudConfig, service_id: str, wait_timeout_minutes: int = 0) -> dict:
+        # DELETE /api/v2/missionControl/eventBrokerServices/{id}
+        module_op = SolaceTaskOps.OP_DELETE_OBJECT
+        path_array = self.get_mission_control_base_path_array(
+            config) + [self.API_EVENT_BROKER_SERVICES, service_id]
+        resp = self.make_delete_request(config, path_array, module_op)
+        return self._maybe_wait_for_operation(config, resp, wait_timeout_minutes)
+
+    def find_service_by_name(self, config: SolaceTaskSolaceCloudConfig, name: str) -> dict:
+        # v2 services are identified by 'name'; returns the service dict or None
+        services = self.get_event_broker_services(config)
+        for service in services:
+            if isinstance(service, dict) and service.get('name') == name:
+                return service
+        return None

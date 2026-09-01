@@ -17,14 +17,15 @@ short_description: get list of queue-templates
 description:
 - "Get a list of Queue-template objects."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/software-broker/config/index.html#/queueTemplate/getMsgVpnQueueTemplates"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/software-broker/config/index.html#/queueTemplate/\
+  getMsgVpnQueueTemplates"
 - "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/queueTemmplate/getMsgVpnQueueTemplates"
 extends_documentation_fragment:
 - solace.pubsub_plus.solace.broker
 - solace.pubsub_plus.solace.vpn
 - solace.pubsub_plus.solace.get_list
 seealso:
-- module: solace_queue_template
+- module: solace.pubsub_plus.solace_queue_template
 author:
 - Ulrich Herbst (@uherbstsolace)
 '''
@@ -123,7 +124,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api

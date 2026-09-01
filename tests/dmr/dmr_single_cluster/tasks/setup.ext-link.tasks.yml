@@ -53,6 +53,14 @@
     dmr_cluster_name: "{{ dmr_cluster_name }}"
     state: present
 
+- name: "setup.ext-link.tasks: solace_dmr_cluster_link_attribute: add"
+  solace_dmr_cluster_link_attribute:
+    name: "{{ dmr_cluster_link_attribute_name }}"
+    value: "{{ dmr_cluster_link_attribute_value }}"
+    remote_node_name: "{{ remote_node_name }}"
+    dmr_cluster_name: "{{ dmr_cluster_name }}"
+    state: present
+
 - name: "setup.ext-link.tasks: solace_dmr_bridge: create"
   solace_dmr_bridge:
     remote_node_name: "{{ remote_node_name }}"

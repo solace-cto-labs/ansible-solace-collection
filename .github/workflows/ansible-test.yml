@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 name: ansible-test
@@ -24,17 +24,15 @@ env:
 
 jobs:
   ansbile_test:
-    # runs-on: ubuntu-18.04
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # 3.6 is always tested
-        python-version: [ '3.8.10' ]
-        ansible-version: [
-          # "ansible>=2.10.3,<2.11", # this is 2.10
-          # "ansible>=4.10.0,<5.0.0", # this is 2.11
-          "ansible>=5.1.0,<6.0.0" # this is 2.12
+        python-version: [ '3.13' ]
+        ansible-core-version: [
+          "ansible-core>=2.19,<2.20", # this is 2.19
+          "ansible-core>=2.20,<2.21", # this is 2.20
+          "ansible-core>=2.21,<2.22", # this is 2.21
         ]
 
 
@@ -65,41 +63,21 @@ jobs:
           python3 --version
 
       - name: Checkout Current Branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
 
-
-        # vm comes with a pre-installed python3.6
-        # ansible-test will also use that
-        # ==> install all devel requirements on that python3.6 version first
-        # python 3.6 support only available up to 2.11 ansible_core
-
-      - name: set up python 3.6
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.6
-
-      - name: Install ansible and devel requirements for 3.6
-        env:
-          ANSIBLE_VERSION: "ansible>=2.10.3,<2.11"
-        run: |
-          python -m pip install --upgrade pip
-          pip install "$ANSIBLE_VERSION"
-          pip install -r "${TEST_ANSIBLE_SOLACE_COLLECTION_DIR}/requirements.txt"
-          pip install -r "${PIP_DEVEL_REQUIREMENTS_FILE}"
-
       - name: setup python matrix version
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install ansible and devel requirements for matrix version
+      - name: Install ansible-core and devel requirements for matrix version
         env:
-          ANSIBLE_VERSION: "${{ matrix.ansible-version }}"
+          ANSIBLE_CORE_VERSION: "${{ matrix.ansible-core-version }}"
         run: |
           python -m pip install --upgrade pip
-          pip install "$ANSIBLE_VERSION"
+          pip install "$ANSIBLE_CORE_VERSION"
           pip install -r "${TEST_ANSIBLE_SOLACE_COLLECTION_DIR}/requirements.txt"
           pip install -r "${PIP_DEVEL_REQUIREMENTS_FILE}"
 

@@ -1,0 +1,52 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# NOTE: virtualHostname is a broker-global object (no msg_vpn).
+
+-
+  name: "main: solace_virtual_hostname"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace.pubsub_plus.solace_virtual_hostname: &bc
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+    solace.pubsub_plus.solace_get_virtual_hostnames: *bc
+  vars:
+    vhostname: "asct-broker.example.com"
+  tasks:
+    - name: "clean start"
+      solace_virtual_hostname:
+        name: "{{ vhostname }}"
+        state: absent
+
+    - name: "add"
+      solace_virtual_hostname:
+        name: "{{ vhostname }}"
+        settings:
+          enabled: false
+          msgVpnName: "{{ vpn }}"
+        state: present
+
+    - name: "get list"
+      solace_get_virtual_hostnames:
+      register: result
+    - assert:
+        that:
+          - result.rc == 0
+          - result.result_list_count >= 1
+
+    - name: "remove"
+      solace_virtual_hostname:
+        name: "{{ vhostname }}"
+        state: absent
+
+###
+# The End.

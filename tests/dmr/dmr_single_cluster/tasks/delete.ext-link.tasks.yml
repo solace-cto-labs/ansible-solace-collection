@@ -40,6 +40,14 @@
     remote_node_name: "{{ remote_node_name }}"
     state: absent
 
+- name: "delete.ext-link.tasks: solace_dmr_cluster_link_attribute: delete"
+  solace_dmr_cluster_link_attribute:
+    name: "{{ dmr_cluster_link_attribute_name }}"
+    value: "{{ dmr_cluster_link_attribute_value }}"
+    remote_node_name: "{{ remote_node_name }}"
+    dmr_cluster_name: "{{ dmr_cluster_name }}"
+    state: absent
+
 - name: "delete.ext-link.tasks: solace_dmr_cluster_link_trusted_cn: delete"
   solace_dmr_cluster_link_trusted_cn:
     name: "{{ dmr_cluster_link_trusted_cn }}"

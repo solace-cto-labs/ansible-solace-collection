@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021, Solace Corporation, Ulrich Herbst <ulrich.herbst@solace.com>, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation, Ulrich Herbst <ulrich.herbst@solace.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -30,7 +30,7 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state
 seealso:
-- module: solace_get_jndi_connection_factories
+- module: solace.pubsub_plus.solace_get_jndi_connection_factories
 
 author:
 - Ulrich Herbst (@uherbstsolace)
@@ -114,7 +114,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig

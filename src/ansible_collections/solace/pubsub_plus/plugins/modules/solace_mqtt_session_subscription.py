@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -15,9 +15,11 @@ DOCUMENTATION = '''
 module: solace_mqtt_session_subscription
 short_description: subscription for mqtt session
 description:
-- "Configure a MQTT Session Subscription object on a MQTT Session. Allows addition, removal and update of a MQTT Session Subscription object in an idempotent manner."
+- "Configure a MQTT Session Subscription object on a MQTT Session. Allows addition, removal and update of a MQTT Session Subscription object in an
+  idempotent manner."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/mqttSession/createMsgVpnMqttSessionSubscription"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/mqttSession/\
+  createMsgVpnMqttSessionSubscription"
 options:
   name:
     description: The subscription topic. Maps to 'subscriptionTopic' in the API.
@@ -36,8 +38,8 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.state
 - solace.pubsub_plus.solace.virtual_router
 seealso:
-- module: solace_mqtt_session
-- module: solace_get_mqtt_session_subscriptions
+- module: solace.pubsub_plus.solace_mqtt_session
+- module: solace.pubsub_plus.solace_get_mqtt_session_subscriptions
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -112,7 +114,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig

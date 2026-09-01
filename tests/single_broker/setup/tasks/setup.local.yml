@@ -22,12 +22,12 @@
     # get the sempv2 version and write into inventory
 
 - name: "Docker Compose up"
-  community.general.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ docker_compose_path }}"
     files:
       - "{{ docker_compose_file }}"
     state: present
-    restarted: yes
+    recreate: always
 
 - set_fact:
     broker_url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}"

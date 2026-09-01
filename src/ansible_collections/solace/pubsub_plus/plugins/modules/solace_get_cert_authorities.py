@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -16,9 +16,11 @@ module: solace_get_cert_authorities
 short_description: get list of cert authorities
 description:
 - "Get a list of Certificate Authority objects."
-- "Supports only Solace Standalone Brokers. For Solace Cloud see M(solace_get_client_cert_authorities) and M(solace_get_domain_cert_authorities)."
+- "Supports only Solace Standalone Brokers. For Solace Cloud see M(solace.pubsub_plus.solace_get_client_cert_authorities) and
+  M(solace.pubsub_plus.solace_get_domain_cert_authorities)."
 requirements:
-- "Works up to SempV2 API v2.18 for standalone brokers. See M(solace_get_client_cert_authorities) and M(solace_get_domain_cert_authorities) for later SempV2 versions."
+- "Works up to SempV2 API v2.18 for standalone brokers. See M(solace.pubsub_plus.solace_get_client_cert_authorities) and
+  M(solace.pubsub_plus.solace_get_domain_cert_authorities) for later SempV2 versions."
 notes:
 - "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/certAuthority/getCertAuthorities"
 - "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/certAuthority/getCertAuthorities"
@@ -27,7 +29,7 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.broker
 - solace.pubsub_plus.solace.get_list
 seealso:
-- module: solace_cert_authority
+- module: solace.pubsub_plus.solace_cert_authority
 author:
   - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -118,7 +120,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible.module_utils.basic import AnsibleModule

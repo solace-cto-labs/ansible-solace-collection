@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -6,9 +6,9 @@ import traceback
 __metaclass__ = type
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_utils import SolaceUtils
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceInternalErrorAbstractMethod, SolaceInternalError, SolaceParamsValidationError
+from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceInternalErrorAbstractMethod, SolaceInternalError
 import urllib.parse
 
 SOLACE_TASK_CONFIG_HAS_IMPORT_ERROR = False
@@ -79,20 +79,20 @@ class SolaceTaskConfig(object):
                 choices=['absent', 'present', 'exactly'])
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_sempv2_settings():
         return dict(
             sempv2_settings=dict(
                 type='dict', required=False, aliases=['settings'])
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_sempv1_settings():
         return dict(
             sempv1_settings=dict(type='dict', required=False)
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_solace_cloud_settings():
         return dict(
             solace_cloud_settings=dict(
@@ -112,6 +112,8 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
         self.validate_certs = bool(module.params['validate_certs'])
         self.x_broker = module.params.get('x_broker', None)
         self.solace_cloud_home = module.params.get('solace_cloud_home', None)
+        self.solace_cloud_static_ip = module.params.get(
+            'solace_cloud_static_ip', None)
         solace_cloud_api_token = module.params.get(
             'solace_cloud_api_token', None)
         solace_cloud_service_id = module.params.get(
@@ -121,7 +123,9 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
               or (not solace_cloud_api_token and not solace_cloud_service_id))
         if not ok:
             result = SolaceUtils.create_result(rc=1)
-            msg = f"must provide either both or none for Solace Cloud: solace_cloud_api_token={solace_cloud_api_token}, solace_cloud_service_id={solace_cloud_service_id}."
+            msg = (f"must provide either both or none for Solace Cloud: "
+                   f"solace_cloud_api_token={solace_cloud_api_token}, "
+                   f"solace_cloud_service_id={solace_cloud_service_id}.")
             module.fail_json(msg=msg, **result)
         if ok and solace_cloud_api_token and solace_cloud_service_id:
             self.solace_cloud_config = dict(
@@ -157,13 +161,15 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
                     'x-asc-module', False)
                 if not isinstance(_reverse_proxy_headers_include_x_asc_module, bool):
                     result = SolaceUtils.create_result(rc=1)
-                    msg = f"argument: 'reverse_proxy.headers.x-asc-module={_reverse_proxy_headers_include_x_asc_module}, is not of type 'bool'; use True/False or yes/no"
+                    msg = (f"argument: 'reverse_proxy.headers.x-asc-module={_reverse_proxy_headers_include_x_asc_module}, "
+                           f"is not of type 'bool'; use True/False or yes/no")
                     module.fail_json(msg=msg, **result)
                 _reverse_proxy_headers_include_x_asc_module_op = _reverse_proxy_headers.get(
                     'x-asc-module-op', False)
                 if not isinstance(_reverse_proxy_headers_include_x_asc_module_op, bool):
                     result = SolaceUtils.create_result(rc=1)
-                    msg = f"argument: 'reverse_proxy.headers.x-asc-module-op={_reverse_proxy_headers_include_x_asc_module_op}, is not of type 'bool'; use True/False or yes/no"
+                    msg = (f"argument: 'reverse_proxy.headers.x-asc-module-op={_reverse_proxy_headers_include_x_asc_module_op}, "
+                           f"is not of type 'bool'; use True/False or yes/no")
                     module.fail_json(msg=msg, **result)
                 self.reverse_proxy['headers']['x-asc-module'] = _reverse_proxy_headers_include_x_asc_module
                 self.reverse_proxy['headers']['x-asc-module-op'] = _reverse_proxy_headers_include_x_asc_module_op
@@ -229,7 +235,7 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
             _headers.update(_reverse_proxy_headers)
         return _headers
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_broker_config() -> dict:
         return dict(
             host=dict(type='str', default='localhost'),
@@ -254,22 +260,26 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
             )
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_solace_cloud() -> dict:
         return dict(
             solace_cloud_home=dict(type='str', required=False, default=None, choices=[
-                                   'us', 'au', 'US', 'AU', '']),
+                                   'us', 'au', 'eu', 'sg', 'US', 'AU', 'EU', 'SG', '']),
+            solace_cloud_static_ip=dict(
+                type='bool', required=False, default=None),
             solace_cloud_api_token=dict(
                 type='str', required=False, no_log=True, default=None),
             solace_cloud_service_id=dict(
                 type='str', required=False, default=None)
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_solace_cloud_mandatory() -> dict:
         return dict(
             solace_cloud_home=dict(type='str', required=False, default=None, choices=[
-                                   'us', 'au', 'US', 'AU', '']),
+                                   'us', 'au', 'eu', 'sg', 'US', 'AU', 'EU', 'SG', '']),
+            solace_cloud_static_ip=dict(
+                type='bool', required=False, default=None),
             solace_cloud_api_token=dict(type='str',
                                         required=True,
                                         no_log=True),
@@ -277,26 +287,26 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
                                          required=True)
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_vpn() -> dict:
         return dict(
             msg_vpn=dict(type='str', required=True)
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_virtual_router():
         return dict(
             virtual_router=dict(type='str', default='primary',
                                 choices=['primary', 'backup'])
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_name():
         return dict(
             name=dict(type='str', required=True)
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_names():
         return dict(
             names=dict(type='list',
@@ -305,21 +315,21 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
                        )
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_crud():
         arg_spec = SolaceTaskBrokerConfig.arg_spec_name()
         arg_spec.update(SolaceTaskBrokerConfig.arg_spec_sempv2_settings())
         arg_spec.update(SolaceTaskBrokerConfig.arg_spec_state())
         return arg_spec
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_crud_list():
         arg_spec = SolaceTaskBrokerConfig.arg_spec_names()
         arg_spec.update(SolaceTaskBrokerConfig.arg_spec_sempv2_settings())
         arg_spec.update(SolaceTaskBrokerConfig.arg_spec_state_crud_list())
         return arg_spec
 
-    @ staticmethod
+    @staticmethod
     def _arg_spec_get_query_params():
         return dict(
             query_params=dict(
@@ -332,13 +342,13 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
             )
         )
 
-    @ staticmethod
+    @staticmethod
     def _arg_spec_get_object_list_page_count():
         return dict(
             page_count=dict(type='int', default=100, required=False)
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_get_object_list_config_montor():
         d = dict(
             api=dict(type='str', default='config',
@@ -348,7 +358,7 @@ class SolaceTaskBrokerConfig(SolaceTaskConfig):
         d.update(SolaceTaskBrokerConfig._arg_spec_get_query_params())
         return d
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_get_object_list_monitor():
         d = dict(
             api=dict(type='str', default='monitor', choices=['monitor'])
@@ -369,6 +379,8 @@ class SolaceTaskSolaceCloudConfig(SolaceTaskConfig):
         self.validate_certs = bool(module.params['validate_certs'])
         self.auth = BearerAuth(self.solace_cloud_api_token)
         self.solace_cloud_home = module.params.get('solace_cloud_home', None)
+        self.solace_cloud_static_ip = module.params.get(
+            'solace_cloud_static_ip', None)
 
     def is_solace_cloud(self) -> bool:
         return True
@@ -388,11 +400,13 @@ class SolaceTaskSolaceCloudConfig(SolaceTaskConfig):
     def get_headers(self, op) -> dict:
         return {}
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_solace_cloud() -> dict:
         return dict(
             solace_cloud_home=dict(type='str', required=False, default=None, choices=[
-                                   'us', 'au', 'US', 'AU', '']),
+                                   'us', 'au', 'eu', 'sg', 'US', 'AU', 'EU', 'SG', '']),
+            solace_cloud_static_ip=dict(
+                type='bool', required=False, default=None),
             solace_cloud_api_token=dict(
                 type='str', required=True, no_log=True, aliases=['api_token']),
             timeout=dict(type='int', default='60', required=False),
@@ -409,14 +423,14 @@ class SolaceTaskSolaceCloudServiceConfig(SolaceTaskSolaceCloudConfig):
         self.solace_cloud_service_id = module.params.get(
             self.PARAM_SERVICE_ID, None)
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_solace_cloud_service_id() -> dict:
         return dict(
             solace_cloud_service_id=dict(
                 type='str', required=False, default=None, aliases=['service_id'])
         )
 
-    @ staticmethod
+    @staticmethod
     def arg_spec_solace_cloud_service_id_mandatory() -> dict:
         return dict(
             solace_cloud_service_id=dict(

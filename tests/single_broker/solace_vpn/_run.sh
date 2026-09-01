@@ -29,6 +29,7 @@ playbooks=(
   "$scriptDir/main.local.playbook.yml"
   "$scriptDir/idempotency.playbook.yml"
   "$scriptDir/ex.playbook.yml"
+  "$scriptDir/vpn_proxy.playbook.yml"
 )
 
 ##############################################################################################################################

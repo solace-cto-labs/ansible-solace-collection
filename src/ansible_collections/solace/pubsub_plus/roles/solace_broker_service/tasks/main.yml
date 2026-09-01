@@ -15,7 +15,17 @@
 - name: "call docker compose"
   block:
   - name: "docker compose: {{ combined_docker_compose_settings.project_name }}:{{ combined_docker_compose_settings.state }}"
-    community.general.docker_compose: "{{ combined_docker_compose_settings }}"
+    # migrated from community.general.docker_compose (removed in community.docker 4.0.0,
+    # docker-compose v1 EOL). docker_compose_v2 has no 'restarted' param; 'recreate: always'
+    # (the role default) provides the equivalent recreate-on-run behaviour.
+    community.docker.docker_compose_v2:
+      project_name: "{{ combined_docker_compose_settings.project_name }}"
+      definition: "{{ combined_docker_compose_settings.definition | default(omit) }}"
+      project_src: "{{ combined_docker_compose_settings.project_src | default(omit) }}"
+      files: "{{ combined_docker_compose_settings.files | default(omit) }}"
+      state: "{{ combined_docker_compose_settings.state | default('present') }}"
+      recreate: "{{ combined_docker_compose_settings.recreate | default(omit) }}"
+      services: "{{ combined_docker_compose_settings.services | default(omit) }}"
     register: docker_compose_result
   rescue:
   - set_fact:
@@ -23,8 +33,8 @@
         rc: 1
         msg:
           community:
-            general:
-              docker_compose:
+            docker:
+              docker_compose_v2:
                 result: "{{ docker_compose_result }}"
 - fail:
     msg: "{{ solace_broker_service_result }}"

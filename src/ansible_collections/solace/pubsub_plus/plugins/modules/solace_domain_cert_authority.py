@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2022, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -18,13 +18,13 @@ description:
 - "Allows addition, removal and configuration of domain certificate authority objects on Solace Brokers in an idempotent manner."
 - "Supports standalone brokers and Solace Cloud."
 requirements:
-- "Requires min SempV2 API v2.19 for standalone brokers. See M(solace_cert_authority) for earlier SempV2 versions."
+- "Requires min SempV2 API v2.19 for standalone brokers. See M(solace.pubsub_plus.solace_cert_authority) for earlier SempV2 versions."
 notes:
 - "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/domainCertAuthority"
 - "Module Solace Cloud API: not available"
 seealso:
-- module: solace_get_domain_cert_authorities
-- module: solace_cert_authority
+- module: solace.pubsub_plus.solace_get_domain_cert_authorities
+- module: solace.pubsub_plus.solace_cert_authority
 options:
   name:
     description: The name of the Domain Certificate Authority. Maps to 'certAuthorityName' in the Sempv2 API.
@@ -40,7 +40,7 @@ author:
 '''
 
 EXAMPLES = '''
-# Copyright (c) 2022, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2022, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 -
@@ -153,7 +153,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_consts import SolaceTaskOps
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api, SolaceCloudApiCertAuthority

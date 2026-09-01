@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+scriptName=$(basename "$(test -L "$0" && readlink "$0" || echo "$0")");
 
 ############################################################################################################################
 # Bootstrap Ubuntu-18 VM with prerequisites to run role solace_broker_service.
@@ -20,7 +20,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
 echo " >>> Bootstrap vm ..."
 
-ssh "$vmAdminUsr@$vmPublicIpAddress" <<BOOT_EOL
+if ! ssh "$vmAdminUsr@$vmPublicIpAddress" <<BOOT_EOL
   sudo apt-get update
   sudo apt-get -y upgrade
   echo ">>> docker =================================================="
@@ -28,19 +28,22 @@ ssh "$vmAdminUsr@$vmPublicIpAddress" <<BOOT_EOL
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
   apt-cache policy docker-ce
-  sudo apt-get install --upgrade docker-ce -y
+  # docker-compose-plugin provides Compose V2 (docker compose), required by
+  # community.docker.docker_compose_v2. The End-of-Life 'docker-compose' (v1)
+  # Python package is no longer installed.
+  sudo apt-get install --upgrade docker-ce docker-compose-plugin -y
   echo ">>> python =================================================="
   sudo apt-get install --upgrade python3
   sudo apt-get install --upgrade python3-pip -y
   sudo -H python3 -m pip install --upgrade pip
   sudo -H python3 -m pip install --upgrade docker
-  sudo -H python3 -m pip install --upgrade docker-compose
   echo ">>> upgrading =================================================="
   sudo apt-get update
   sudo apt-get -y upgrade
 BOOT_EOL
-
-if [[ $? != 0 ]]; then echo " >>> XT_ERROR: bootstrap vm"; exit 1; fi
+then
+  echo " >>> XT_ERROR: bootstrap vm"; exit 1
+fi
 
 echo " >>> Success."
 

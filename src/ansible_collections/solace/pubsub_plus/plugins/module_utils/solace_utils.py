@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -103,7 +103,9 @@ class SolaceUtils(object):
         return copy.deepcopy(d)
 
     @staticmethod
-    def deep_dict_diff(new: dict, old: dict, changes: dict = {}):
+    def deep_dict_diff(new: dict, old: dict, changes: dict = None):
+        if changes is None:
+            changes = {}
         for k in new.keys():
             if not isinstance(new[k], dict):
                 _old = old.get(k, None) if hasattr(old, 'get') else old

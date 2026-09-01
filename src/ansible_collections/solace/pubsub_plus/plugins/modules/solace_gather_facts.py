@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -16,7 +16,8 @@ module: solace_gather_facts
 short_description: gather broker facts
 description: >
   Retrieve facts from the Solace broker and set 'ansible_facts.solace'.
-  Call at the beginning of the playbook so all subsequent tasks can use '{{ ansible_facts.solace.<path-to-fact> }}' or M(solace_get_facts) module.
+  Call at the beginning of the playbook so all subsequent tasks can use '{{ ansible_facts.solace.<path-to-fact> }}' or
+    M(solace.pubsub_plus.solace_get_facts) module.
   Supports Solace Cloud and standalone brokers.
   Retrieves: service/broker info, about info, virtual router name, messaging endpoints, etc.
 notes:
@@ -34,8 +35,8 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.broker
 - solace.pubsub_plus.solace.broker_config_solace_cloud
 seealso:
-- module: solace_get_facts
-- module: solace_cloud_account_gather_facts
+- module: solace.pubsub_plus.solace_get_facts
+- module: solace.pubsub_plus.solace_cloud_account_gather_facts
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -103,9 +104,8 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_consts import SolaceTaskOps
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceApiError
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api, SolaceCloudApi, SolaceSempV1Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
@@ -127,7 +127,7 @@ class SolaceGatherFactsTask(SolaceBrokerGetTask):
             self.add_path_value(
                 dictionary[path_array[0]], path_array[1:], value)
         else:
-            if(path_array[0] == ''):
+            if (path_array[0] == ''):
                 dictionary['broker'] = value
             else:
                 dictionary[path_array[0]] = value
@@ -210,7 +210,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=arg_spec,
-        supports_check_mode=False
+        supports_check_mode=True
     )
 
     solace_task = SolaceGatherFactsTask(module)

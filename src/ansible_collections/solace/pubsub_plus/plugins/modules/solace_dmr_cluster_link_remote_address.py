@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -17,7 +17,8 @@ short_description: remote address for dmr cluster link
 description:
 - "Allows addition, removal and configuration of Remote Address Objects on a DRM Cluster Link."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/dmrCluster/createDmrClusterLinkRemoteAddress"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/dmrCluster/\
+  createDmrClusterLinkRemoteAddress"
 options:
   name:
     description: The FQDN or IP address (and optional port) of the remote node. Maps to 'remoteAddress' in the API.
@@ -37,9 +38,9 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state
 seealso:
-- module: solace_dmr_cluster
-- module: solace_dmr_cluster_link
-- module: solace_get_dmr_cluster_link_remote_addresses
+- module: solace.pubsub_plus.solace_dmr_cluster
+- module: solace.pubsub_plus.solace_dmr_cluster_link
+- module: solace.pubsub_plus.solace_get_dmr_cluster_link_remote_addresses
 author:
   - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -94,7 +95,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -17,8 +17,10 @@ short_description: get list of mqtt session subscriptions
 description:
 - "Get a list of Subscription objects attached to a MQTT Session."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/mqttSession/getMsgVpnMqttSessionSubscriptions"
-- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/mqttSession/getMsgVpnMqttSessionSubscriptions"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/mqttSession/\
+  getMsgVpnMqttSessionSubscriptions"
+- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/mqttSession/\
+  getMsgVpnMqttSessionSubscriptions"
 options:
   mqtt_session_client_id:
     description: The MQTT session client id. Maps to 'mqttSessionClientId' in the API.
@@ -31,7 +33,7 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.get_list
 - solace.pubsub_plus.solace.virtual_router
 seealso:
-- module: solace_mqtt_session_subscription
+- module: solace.pubsub_plus.solace_mqtt_session_subscription
 author:
   - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -110,7 +112,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible.module_utils.basic import AnsibleModule

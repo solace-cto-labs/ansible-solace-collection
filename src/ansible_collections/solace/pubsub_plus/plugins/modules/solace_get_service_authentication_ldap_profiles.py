@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -32,7 +32,7 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.broker
 - solace.pubsub_plus.solace.broker_config_solace_cloud
 seealso:
-- module: solace_service_authentication_ldap_profile
+- module: solace.pubsub_plus.solace_service_authentication_ldap_profile
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -197,7 +197,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceGetTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV1PagingGetApi, SolaceCloudApi
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
@@ -240,7 +240,10 @@ class SolaceGetServiceAuthenticationLdapProfilesTask(SolaceGetTask):
         # 'num-elements': 1
         response_list_path_array = [
             'rpc-reply', 'rpc', 'show', 'ldap-profile', 'ldap-profile']
-        return self.sempv1_get_paging_api.get_objects(self.get_config(), self.sempv1_get_paging_api.convertDict2Sempv1RpcXmlString(rpc_dict), response_list_path_array)
+        return self.sempv1_get_paging_api.get_objects(
+            self.get_config(),
+            self.sempv1_get_paging_api.convertDict2Sempv1RpcXmlString(rpc_dict),
+            response_list_path_array)
 
     def do_task(self):
         objects = self.get_list()

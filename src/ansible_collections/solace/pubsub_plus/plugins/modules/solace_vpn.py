@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -34,8 +34,8 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.state
 - solace.pubsub_plus.solace.broker_config_solace_cloud
 seealso:
-- module: solace_get_vpns
-- module: solace_get_vpn_clients
+- module: solace.pubsub_plus.solace_get_vpns
+- module: solace.pubsub_plus.solace_get_vpn_clients
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -114,13 +114,13 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_utils import SolaceUtils
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_consts import SolaceTaskOps
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api, SolaceCloudApi
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceInternalError, SolaceModuleUsageError
+from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceModuleUsageError
 from ansible.module_utils.basic import AnsibleModule
 
 

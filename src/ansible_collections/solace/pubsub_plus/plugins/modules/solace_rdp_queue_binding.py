@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -17,7 +17,8 @@ short_description: queue bindining on rdp
 description:
 - "Allows addition, removal and configuration of Queue Binding objects for a Rest Delivery Point(RDP). "
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/restDeliveryPoint/getMsgVpnRestDeliveryPointQueueBindings"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/restDeliveryPoint/\
+  getMsgVpnRestDeliveryPointQueueBindings"
 options:
   name:
     description: Name of the queue. Maps to 'queueBindingName' in the API.
@@ -34,9 +35,9 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state
 seealso:
-- module: solace_rdp
-- module: solace_queue
-- module: solace_get_rdp_queue_bindings
+- module: solace.pubsub_plus.solace_rdp
+- module: solace.pubsub_plus.solace_queue
+- module: solace.pubsub_plus.solace_get_rdp_queue_bindings
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -124,7 +125,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig

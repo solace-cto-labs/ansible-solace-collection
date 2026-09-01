@@ -1,6 +1,4 @@
 # docker-compose -f PubSubStandard_singleNode.yml up
-version: '3.3'
-
 services:
   primary:
     # container_name: "${brokerDockerContainerName}"
@@ -11,8 +9,8 @@ services:
     ulimits:
       core: 2
       nofile:
-        soft: 2448
-        hard: 38048
+        soft: 4096
+        hard: 1048576
     volumes:
       - ${HOST_MOUNT_PATH_SECRETS_DIR}:/run/secrets
     deploy:
@@ -22,12 +20,14 @@ services:
     ports:
       #SEMP over TLS
       - '8943:1943'
-      #SEMP / PubSub+ Manager
+      #SEMP / Broker Manager
       - '8081:8080'
     environment:
       - username_admin_globalaccesslevel=admin
       - username_admin_password=admin
-      - system_scaling_maxconnectioncount=100
+      - system_scaling_maxconnectioncount=1000
+      - system_scaling_maxkafkabridgecount=10
+      - system_scaling_maxkafkabrokerconnectioncount=300
       #- routername=ansible-solace__test
       - "tls_servercertificate_filepath=/run/secrets/${CERT_FILE}"
 

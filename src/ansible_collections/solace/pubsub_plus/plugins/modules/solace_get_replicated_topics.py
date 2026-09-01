@@ -23,8 +23,8 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.vpn
 - solace.pubsub_plus.solace.get_list_monitor
 seealso:
-- module: solace_replicated_topic
-- module: solace_replicated_topics
+- module: solace.pubsub_plus.solace_replicated_topic
+- module: solace.pubsub_plus.solace_replicated_topics
 author:
 - Paulus Gunadi (@pjgunadi)
 '''
@@ -81,7 +81,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible.module_utils.basic import AnsibleModule

@@ -1,0 +1,157 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+-
+  name: "main: solace_distributed_cache"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace.pubsub_plus.solace_distributed_cache: &sc
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace.pubsub_plus.solace_distributed_cache_cluster: *sc
+    solace.pubsub_plus.solace_distributed_cache_cluster_instance: *sc
+    solace.pubsub_plus.solace_distributed_cache_cluster_topic: *sc
+    solace.pubsub_plus.solace_distributed_cache_cluster_topics: *sc
+    solace.pubsub_plus.solace_distributed_cache_cluster_global_home: *sc
+    solace.pubsub_plus.solace_distributed_cache_cluster_global_home_topic_prefix: *sc
+    solace.pubsub_plus.solace_distributed_cache_cluster_global_home_topic_prefixes: *sc
+  vars:
+    cache: "asct-cache"
+    cluster: "asct-cluster"
+    home_cluster: "asct-home-cluster"
+    instance: "asct-instance"
+  tasks:
+    - name: "clean start"
+      solace_distributed_cache:
+        name: "{{ cache }}"
+        state: absent
+
+    - name: "add cache"
+      solace_distributed_cache:
+        name: "{{ cache }}"
+        settings:
+          enabled: false
+        state: present
+
+    - name: "add cluster"
+      solace_distributed_cache_cluster:
+        name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        settings:
+          enabled: false
+        state: present
+
+    - name: "add cluster instance"
+      solace_distributed_cache_cluster_instance:
+        name: "{{ instance }}"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: present
+
+    - name: "add cluster topic"
+      solace_distributed_cache_cluster_topic:
+        name: "asct/topic/single"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: present
+
+    - name: "add cluster topics (bulk)"
+      solace_distributed_cache_cluster_topics:
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        names:
+          - "asct/topic/a/>"
+          - "asct/topic/b/>"
+        state: present
+
+    - name: "add global caching home cluster"
+      solace_distributed_cache_cluster_global_home:
+        name: "{{ home_cluster }}"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: present
+
+    - name: "add global home topic prefix"
+      solace_distributed_cache_cluster_global_home_topic_prefix:
+        name: "asct/prefix/single/>"
+        home_cluster_name: "{{ home_cluster }}"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: present
+
+    - name: "add global home topic prefixes (bulk)"
+      solace_distributed_cache_cluster_global_home_topic_prefixes:
+        home_cluster_name: "{{ home_cluster }}"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        names:
+          - "asct/prefix/a/>"
+          - "asct/prefix/b/>"
+        state: present
+
+    - name: "remove global home topic prefixes (bulk)"
+      solace_distributed_cache_cluster_global_home_topic_prefixes:
+        home_cluster_name: "{{ home_cluster }}"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        names: []
+        state: exactly
+
+    - name: "remove global home topic prefix"
+      solace_distributed_cache_cluster_global_home_topic_prefix:
+        name: "asct/prefix/single/>"
+        home_cluster_name: "{{ home_cluster }}"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: absent
+
+    - name: "remove global caching home cluster"
+      solace_distributed_cache_cluster_global_home:
+        name: "{{ home_cluster }}"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: absent
+
+    - name: "remove cluster topics (bulk)"
+      solace_distributed_cache_cluster_topics:
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        names: []
+        state: exactly
+
+    - name: "remove cluster topic"
+      solace_distributed_cache_cluster_topic:
+        name: "asct/topic/single"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: absent
+
+    - name: "remove cluster instance"
+      solace_distributed_cache_cluster_instance:
+        name: "{{ instance }}"
+        cluster_name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: absent
+
+    - name: "remove cluster"
+      solace_distributed_cache_cluster:
+        name: "{{ cluster }}"
+        cache_name: "{{ cache }}"
+        state: absent
+
+    - name: "remove cache"
+      solace_distributed_cache:
+        name: "{{ cache }}"
+        state: absent
+
+###
+# The End.

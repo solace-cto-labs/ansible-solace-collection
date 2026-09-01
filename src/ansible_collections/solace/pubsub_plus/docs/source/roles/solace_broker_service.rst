@@ -242,7 +242,9 @@ Example Output Docker Compose Settings
         environment:
         - username_admin_globalaccesslevel=admin
         - username_admin_password=admin
-        - system_scaling_maxconnectioncount=100
+        - system_scaling_maxconnectioncount=1000
+        - system_scaling_maxkafkabridgecount=10
+              - system_scaling_maxkafkabrokerconnectioncount=300
         - tls_servercertificate_filepath=/run/secrets/asc.pem
         image: solace/solace-pubsub-standard:latest
         ports:
@@ -253,8 +255,8 @@ Example Output Docker Compose Settings
         ulimits:
           core: 2
           nofile:
-            hard: 38048
-            soft: 2448
+            hard: 1048576
+            soft: 4096
         user: '4000'
         volumes:
         - /var/local/broker_services/asc-test_roles_broker_service_single_node/secrets:/run/secrets
@@ -264,7 +266,6 @@ Example Output Docker Compose Settings
         - /var/local/broker_services/asc-test_roles_broker_service_single_node/data/diagnostics:/var/lib/solace/diags:Z
         - /var/local/broker_services/asc-test_roles_broker_service_single_node/data/adbBackup:/usr/sw/adb:Z
         - /var/local/broker_services/asc-test_roles_broker_service_single_node/data/var:/usr/sw/var:Z
-    version: '3.3'
   project_name: asc-test_roles_broker_service_single_node
   services:
   - primary

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-scriptDir=$(cd $(dirname "$0") && pwd);
+scriptDir=$(cd "$(dirname "$0")" && pwd);
 
 # set the python interpreter
-  export ANSIBLE_PYTHON_INTERPRETER=$(python3 -c "import sys; print(sys.executable)")
+  ANSIBLE_PYTHON_INTERPRETER=$(python3 -c "import sys; print(sys.executable)")
+  export ANSIBLE_PYTHON_INTERPRETER
 
 # set verbosity
   export ANSIBLE_VERBOSITY=3

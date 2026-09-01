@@ -21,7 +21,7 @@ authors:
 
 ### OPTIONAL but strongly recommended
 # A short summary description of the collection
-description: Collection to manage Solace PubSub+ Components.
+description: Collection to manage Solace Broker Components.
 
 
 # The path to the license file for the collection. This path is relative to the root of the collection. This key is
@@ -41,7 +41,10 @@ tags:
 # collection label 'namespace.name'. The value is a version range
 # L(specifiers,https://python-semanticversion.readthedocs.io/en/latest/#requirement-specification). Multiple version
 # range specifiers can be set and are separated by ','
-dependencies: {}
+dependencies:
+  # required by the solace_broker_service role (community.docker.docker_compose_v2).
+  # 3.6.0 is the first release supporting the inline 'definition' option.
+  community.docker: ">=3.6.0"
 
 # The URL of the originating SCM repository
 repository: https://github.com/solace-iot-team/ansible-solace-collection

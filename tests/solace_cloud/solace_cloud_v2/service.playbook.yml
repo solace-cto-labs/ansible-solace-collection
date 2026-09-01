@@ -1,0 +1,42 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+#
+# Read/idempotency check for solace_cloud_service_v2 against an EXISTING service.
+# Does NOT provision or delete a service (that is billable). Requires the service name
+# via env SOLACE_CLOUD_SERVICE_NAME; the play is skipped if it is not set.
+# Sensitive/account data is read from the environment - nothing is stored in the repo.
+
+-
+  name: "solace_cloud_service_v2 (read / no-op)"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  vars:
+    solace_cloud_api_token: "{{ lookup('env', 'SOLACE_CLOUD_API_TOKEN') }}"
+    solace_cloud_home: "{{ lookup('env', 'SOLACE_CLOUD_HOME') | default('us', true) }}"
+    service_name: "{{ lookup('env', 'SOLACE_CLOUD_SERVICE_NAME') | default('', true) }}"
+  module_defaults:
+    solace.pubsub_plus.solace_cloud_service_v2:
+      solace_cloud_api_token: "{{ solace_cloud_api_token }}"
+      solace_cloud_home: "{{ solace_cloud_home }}"
+      wait_timeout_minutes: 0
+  tasks:
+    - name: "skip if no service name / token provided"
+      meta: end_play
+      when: (solace_cloud_api_token | length == 0) or (service_name | length == 0)
+
+    - name: "find existing service by name (read-only, expect no change)"
+      solace_cloud_service_v2:
+        name: "{{ service_name }}"
+        state: present
+      register: r
+    - assert:
+        that:
+          - r.changed == false
+          - r.response.name == service_name
+        fail_msg: "expected an existing service found by name with no change"
+
+###
+# The End.

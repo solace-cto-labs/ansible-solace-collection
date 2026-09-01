@@ -23,8 +23,8 @@
       serviceMqttWebSocketListenPort: 8000
       serviceRestIncomingPlainTextListenPort: 9000
       serviceRestIncomingTlsListenPort: 9443
-      serviceWebPlainTextListenPort: 80
-      serviceWebTlsListenPort: 443
+      serviceWebPlainTextListenPort: 8008
+      serviceWebTlsListenPort: 1443
 
 ###
 # The End.

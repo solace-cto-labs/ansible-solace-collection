@@ -23,7 +23,7 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.vpn
 - solace.pubsub_plus.solace.get_list
 seealso:
-- module: solace_jndi_connection_factory
+- module: solace.pubsub_plus.solace_jndi_connection_factory
 author:
 - Ulrich Herbst (@uherbstsolace)
 - Ricardo Gomez-Ulmke (@rjgu)
@@ -111,7 +111,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api

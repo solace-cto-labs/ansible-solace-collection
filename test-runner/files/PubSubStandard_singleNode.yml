@@ -1,6 +1,4 @@
 # docker-compose -f PubSubStandard_singleNode.yml up
-version: '3.3'
-
 services:
   primary:
     # container_name: "${brokerDockerContainerName}"
@@ -10,8 +8,8 @@ services:
     ulimits:
       core: 2
       nofile:
-        soft: 2448
-        hard: 38048
+        soft: 4096
+        hard: 1048576
     deploy:
       restart_policy:
         condition: on-failure
@@ -21,9 +19,9 @@ services:
     #container.  This may result in port collisions on commonly used
     #ports that will cause failure of the container to start.
       #Web transport
-      - '80:80'
+      - '8008:8008'
       #Web transport over TLS
-      - '443:443'
+      - '1443:1443'
       #SEMP over TLS
       - '1943:1943'
       #MQTT Default VPN
@@ -38,7 +36,7 @@ services:
       - '8443:8443'
       #MQTT Default VPN over TLS
       - '8883:8883'
-      #SEMP / PubSub+ Manager
+      #SEMP / Broker Manager
       - '8080:8080'
       #REST Default VPN
       - '9000:9000'
@@ -53,7 +51,9 @@ services:
     environment:
       - username_admin_globalaccesslevel=admin
       - username_admin_password=admin
-      - system_scaling_maxconnectioncount=100
+      - system_scaling_maxconnectioncount=1000
+      - system_scaling_maxkafkabridgecount=10
+      - system_scaling_maxkafkabrokerconnectioncount=300
       #- routername=ansible-solace__test
 
 

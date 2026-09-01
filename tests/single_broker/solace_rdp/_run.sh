@@ -25,6 +25,7 @@ inventory=$(assertFile $scriptLogName $INVENTORY_FILE) || exit
 playbooks=(
   "$scriptDir/main.playbook.yml"
   "$scriptDir/required_together.playbook.yml"
+  "$scriptDir/rest_consumer_oauth_jwt_claim.playbook.yml"
 )
 
 ##############################################################################################################################

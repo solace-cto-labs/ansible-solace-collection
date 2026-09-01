@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-scriptDir=$(cd $(dirname "$0") && pwd);
-scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+scriptDir=$(cd "$(dirname "$0")" && pwd);
+scriptName=$(basename "$(test -L "$0" && readlink "$0" || echo "$0")");
 
 ##############################################################################################################################
 # Prepare

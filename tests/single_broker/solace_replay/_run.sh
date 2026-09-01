@@ -28,6 +28,7 @@ pre_playbooks=(
 )
 playbooks=(
   "$scriptDir/main.playbook.yml"
+  "$scriptDir/topic_filter_subscriptions.playbook.yml"
 )
 
 

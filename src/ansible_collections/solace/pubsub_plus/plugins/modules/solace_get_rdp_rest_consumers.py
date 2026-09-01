@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -17,8 +17,10 @@ short_description: get list of rdp rest consumers
 description:
 - "Get a list of Rest Consumer objects configured on a Rest Delivery Point object."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/restDeliveryPoint/getMsgVpnRestDeliveryPointRestConsumers"
-- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/restDeliveryPoint/getMsgVpnRestDeliveryPointRestConsumers"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/restDeliveryPoint/\
+  getMsgVpnRestDeliveryPointRestConsumers"
+- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/restDeliveryPoint/\
+  getMsgVpnRestDeliveryPointRestConsumers"
 options:
   rdp_name:
     description: The name of the Rest Delivery Point. Maps to 'restDeliveryPointName' in the API.
@@ -29,7 +31,7 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.vpn
 - solace.pubsub_plus.solace.get_list
 seealso:
-- module: solace_rdp_rest_consumer
+- module: solace.pubsub_plus.solace_rdp_rest_consumer
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -99,7 +101,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible.module_utils.basic import AnsibleModule

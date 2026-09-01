@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -19,7 +19,7 @@ description:
 notes:
 - "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/bridge/createMsgVpnBridgeRemoteMsgVpn"
 seealso:
-- module: solace_get_bridge_remote_vpns
+- module: solace.pubsub_plus.solace_get_bridge_remote_vpns
 options:
   name:
     description: The remote message VPN name on the remote broker. Maps to 'remoteMsgVpnName' in the API.
@@ -127,7 +127,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
@@ -144,7 +144,8 @@ class SolaceBridgeRemoteVpnTask(SolaceBrokerCRUDTask):
 
     def get_args(self):
         params = self.get_module().params
-        return [params['msg_vpn'], params['bridge_virtual_router'], params['bridge_name'], params['remote_vpn_location'], params['remote_vpn_interface'], params['name']]
+        return [params['msg_vpn'], params['bridge_virtual_router'], params['bridge_name'],
+                params['remote_vpn_location'], params['remote_vpn_interface'], params['name']]
 
     def get_func(self, vpn_name, bridge_virtual_router, bridge_name, remote_vpn_location, remote_vpn_interface, remote_msg_vpn_name):
         # GET /msgVpns/{msgVpnName}/bridges/{bridgeName},{bridgeVirtualRouter}/remoteMsgVpns/{remoteMsgVpnName},{remoteMsgVpnLocation},{remoteMsgVpnInterface}
@@ -169,7 +170,8 @@ class SolaceBridgeRemoteVpnTask(SolaceBrokerCRUDTask):
                       'msgVpns', vpn_name, 'bridges', bridge_uri, 'remoteMsgVpns']
         return self.sempv2_api.make_post_request(self.get_config(), path_array, data)
 
-    def update_func(self, vpn_name, bridge_virtual_router, bridge_name, remote_vpn_location, remote_vpn_interface, remote_msg_vpn_name, settings=None, delta_settings=None):
+    def update_func(self, vpn_name, bridge_virtual_router, bridge_name, remote_vpn_location,
+                    remote_vpn_interface, remote_msg_vpn_name, settings=None, delta_settings=None):
         # PATH /msgVpns/{msgVpnName}/bridges/{bridgeName},{bridgeVirtualRouter}/remoteMsgVpns/{remoteMsgVpnName},{remoteMsgVpnLocation},{remoteMsgVpnInterface}
         bridge_uri = ','.join([bridge_name, bridge_virtual_router])
         remote_vpn_uri = ','.join([remote_msg_vpn_name, remote_vpn_location]) + ',' + (
@@ -179,7 +181,8 @@ class SolaceBridgeRemoteVpnTask(SolaceBrokerCRUDTask):
         return self.sempv2_api.make_patch_request(self.get_config(), path_array, settings)
 
     def delete_func(self, vpn_name, bridge_virtual_router, bridge_name, remote_vpn_location, remote_vpn_interface, remote_msg_vpn_name):
-        #  DELETE /msgVpns/{msgVpnName}/bridges/{bridgeName},{bridgeVirtualRouter}/remoteMsgVpns/{remoteMsgVpnName},{remoteMsgVpnLocation},{remoteMsgVpnInterface}
+        #  DELETE /msgVpns/{msgVpnName}/bridges/{bridgeName},{bridgeVirtualRouter}/
+        #  remoteMsgVpns/{remoteMsgVpnName},{remoteMsgVpnLocation},{remoteMsgVpnInterface}
         bridge_uri = ','.join([bridge_name, bridge_virtual_router])
         remote_vpn_uri = ','.join([remote_msg_vpn_name, remote_vpn_location]) + ',' + (
             remote_vpn_interface if remote_vpn_interface is not None else '')

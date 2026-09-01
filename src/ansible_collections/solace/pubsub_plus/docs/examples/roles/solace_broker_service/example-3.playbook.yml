@@ -5,7 +5,6 @@
   - name: set the docker compose definition
     set_fact:
       _docker_compose_definition:
-        version: '3.3'
         services:
           primary:
             container_name: my-container
@@ -15,8 +14,8 @@
             ulimits:
               core: 2
               nofile:
-                soft: 2448
-                hard: 38048
+                soft: 4096
+                hard: 1048576
             volumes:
               - "/var/local/spool/softAdb:/usr/sw/internalSpool/softAdb:Z"
               - "/var/local/spool:/usr/sw/internalSpool:Z"
@@ -30,7 +29,9 @@
             environment:
               - username_admin_globalaccesslevel=admin
               - username_admin_password=admin
-              - system_scaling_maxconnectioncount=100
+              - system_scaling_maxconnectioncount=1000
+              - system_scaling_maxkafkabridgecount=10
+              - system_scaling_maxkafkabrokerconnectioncount=300
 
   - name: create broker service
     include_role:

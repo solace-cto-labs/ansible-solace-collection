@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -16,13 +16,15 @@ module: solace_acl_subscribe_share_name_exceptions
 short_description: list of subscribe share name exceptions on an acl profile
 description:
 - "Configure a list of Subscription Share Name Exception objects on an ACL Profile in a single transaction."
-- "Allows addition and removal of a list of Subscription Share Name Exception objects as well as replacement of all existing Subscription Share Name Exception objects on an ACL Profile."
+- "Allows addition and removal of a list of Subscription Share Name Exception objects as well as replacement of all existing Subscription Share Name
+  Exception objects on an ACL Profile."
 - "Supports 'transactional' behavior with rollback to original list in case of error."
 - "De-duplicates Subscription Share Name Exception object list."
 - "Reports which topics were added, deleted and omitted (duplicates). In case of an error, reports the invalid Subscription Share Name Exception object."
 - "To delete all Subscription Share Name Exception objects, use state='exactly' with an empty/null list (see examples)."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/createMsgVpnAclProfileSubscribeShareNameException"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/\
+  createMsgVpnAclProfileSubscribeShareNameException"
 options:
   names:
     description: The share name topic. Maps to 'subscribeShareNameException' in the SEMP v2 API.
@@ -48,9 +50,9 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state_crud_list
 seealso:
-- module: solace_acl_profile
-- module: solace_acl_subscribe_share_name_exception
-- module: solace_get_acl_subscribe_share_name_exceptions
+- module: solace.pubsub_plus.solace_acl_profile
+- module: solace.pubsub_plus.solace_acl_subscribe_share_name_exception
+- module: solace.pubsub_plus.solace_get_acl_subscribe_share_name_exceptions
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -182,7 +184,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTopicExListTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig

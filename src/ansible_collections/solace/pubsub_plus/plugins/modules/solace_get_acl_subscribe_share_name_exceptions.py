@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -17,8 +17,10 @@ short_description: get list of subscribe share name exceptions on an acl profile
 description:
 - "Get a list of Subscription Share Name Exception objects configured on an ACL Profile."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/getMsgVpnAclProfileSubscribeShareNameExceptions"
-- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/aclProfile/getMsgVpnAclProfileSubscribeShareNameExceptions"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/\
+  getMsgVpnAclProfileSubscribeShareNameExceptions"
+- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/aclProfile/\
+  getMsgVpnAclProfileSubscribeShareNameExceptions"
 options:
   acl_profile_name:
     description: The name of the ACL Profile. Maps to 'aclProfileName' in the SEMP v2 API.
@@ -29,9 +31,9 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.vpn
 - solace.pubsub_plus.solace.get_list
 seealso:
-- module: solace_acl_subscribe_share_name_exception
-- module: solace_acl_subscribe_share_name_exceptions
-- module: solace_acl_profile
+- module: solace.pubsub_plus.solace_acl_subscribe_share_name_exception
+- module: solace.pubsub_plus.solace_acl_subscribe_share_name_exceptions
+- module: solace.pubsub_plus.solace_acl_profile
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -153,7 +155,7 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible.module_utils.basic import AnsibleModule

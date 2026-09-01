@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -65,7 +65,8 @@ options:
     type: dict
     suboptions:
       semp_base_path:
-        description: "Base path prepended to all SEMP calls. Example: 'my/base/path'. Resulting URL will be: http(s)://{host}:{port}/{semp_base_path}/{module-semp-call-path}"
+        description: "Base path prepended to all SEMP calls. Example: 'my/base/path'. Resulting URL will be:
+          http(s)://{host}:{port}/{semp_base_path}/{module-semp-call-path}"
         type: str
         required: false
       use_basic_auth:
@@ -111,9 +112,19 @@ options:
     choices:
       - us
       - au
+      - eu
+      - sg
       - US
       - AU
+      - EU
+      - SG
       - ''
+  solace_cloud_static_ip:
+    description:
+      - Use the Solace Cloud static (fixed egress) IP API endpoints instead of the dynamic ones. Defaults to false.
+      - "Can also be set via the environment variable ANSIBLE_SOLACE_SOLACE_CLOUD_STATIC_IP."
+    type: bool
+    required: false
   solace_cloud_api_token:
     description:
       - The API Token.
@@ -139,9 +150,19 @@ options:
     choices:
       - us
       - au
+      - eu
+      - sg
       - US
       - AU
+      - EU
+      - SG
       - ''
+  solace_cloud_static_ip:
+    description:
+      - Use the Solace Cloud static (fixed egress) IP API endpoints instead of the dynamic ones. Defaults to false.
+      - "Can also be set via the environment variable ANSIBLE_SOLACE_SOLACE_CLOUD_STATIC_IP."
+    type: bool
+    required: false
   solace_cloud_api_token:
     description:
       - The API Token.
@@ -167,9 +188,19 @@ options:
     choices:
       - us
       - au
+      - eu
+      - sg
       - US
       - AU
+      - EU
+      - SG
       - ''
+  solace_cloud_static_ip:
+    description:
+      - Use the Solace Cloud static (fixed egress) IP API endpoints instead of the dynamic ones. Defaults to false.
+      - "Can also be set via the environment variable ANSIBLE_SOLACE_SOLACE_CLOUD_STATIC_IP."
+    type: bool
+    required: false
   solace_cloud_api_token:
     description:
       - The API Token.
@@ -298,10 +329,10 @@ options:
     description: The query parameters.
     required: false
     type: dict
-    default: {}
     suboptions:
         select:
-          description: Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the select parameter.
+          description: Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See
+            the documentation for the select parameter.
           type: list
           default: []
           elements: str
@@ -335,10 +366,10 @@ options:
     description: The query parameters.
     required: false
     type: dict
-    default: {}
     suboptions:
         select:
-          description: Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the select parameter.
+          description: Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See
+            the documentation for the select parameter.
           type: list
           default: []
           elements: str

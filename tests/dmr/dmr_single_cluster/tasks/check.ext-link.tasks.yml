@@ -63,6 +63,32 @@
       - result.result_list_count == 1
       - result.result_list[0].data.tlsTrustedCommonName == "{{ dmr_cluster_link_trusted_cn }}"
 
+- name: "check.ext-link.tasks: solace_get_dmr_cluster_link_attributes: config"
+  solace_get_dmr_cluster_link_attributes:
+    dmr_cluster_name: "{{ dmr_cluster_name }}"
+    remote_node_name: "{{ remote_node_name }}"
+  register: result
+- assert:
+    that:
+      - result.rc == 0
+      - result.result_list | length == 1
+      - result.result_list_count == 1
+      - result.result_list[0].data.attributeName == "{{ dmr_cluster_link_attribute_name }}"
+      - result.result_list[0].data.attributeValue == "{{ dmr_cluster_link_attribute_value }}"
+
+- name: "check.ext-link.tasks: solace_dmr_cluster_link_attribute: check idempotency"
+  solace_dmr_cluster_link_attribute:
+    name: "{{ dmr_cluster_link_attribute_name }}"
+    value: "{{ dmr_cluster_link_attribute_value }}"
+    remote_node_name: "{{ remote_node_name }}"
+    dmr_cluster_name: "{{ dmr_cluster_name }}"
+    state: present
+  register: result
+- assert:
+    that:
+      - result.rc == 0
+      - result.changed == false
+
 - name: "check.ext-link.tasks: solace_get_dmr_bridges: monitor"
   solace_get_dmr_bridges:
     api: monitor

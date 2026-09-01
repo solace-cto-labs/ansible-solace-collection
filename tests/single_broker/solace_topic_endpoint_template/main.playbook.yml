@@ -1,0 +1,59 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+-
+  name: "main: solace_topic_endpoint_template"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace.pubsub_plus.solace_topic_endpoint_template: &sc
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace.pubsub_plus.solace_get_topic_endpoint_templates: *sc
+  vars:
+    template: "asct-te-template"
+  tasks:
+    - name: "clean start"
+      solace_topic_endpoint_template:
+        name: "{{ template }}"
+        state: absent
+
+    - name: "add"
+      solace_topic_endpoint_template:
+        name: "{{ template }}"
+        settings:
+          accessType: non-exclusive
+          maxMsgSpoolUsage: 1
+          topicEndpointNameFilter: "asct/te/>"
+        state: present
+
+    - name: "update"
+      solace_topic_endpoint_template:
+        name: "{{ template }}"
+        settings:
+          accessType: exclusive
+        state: present
+
+    - name: "get list"
+      solace_get_topic_endpoint_templates:
+      register: result
+    - assert:
+        that:
+          - result.rc == 0
+          - result.result_list_count >= 1
+
+    - name: "remove"
+      solace_topic_endpoint_template:
+        name: "{{ template }}"
+        state: absent
+
+###
+# The End.

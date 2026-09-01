@@ -74,6 +74,20 @@
       username: "{{ sempv2_username }}"
       password: "{{ sempv2_password }}"
       timeout: "{{ sempv2_timeout }}"
+    solace.pubsub_plus.solace_dmr_cluster_link_attribute:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+    solace.pubsub_plus.solace_get_dmr_cluster_link_attributes:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
     solace.pubsub_plus.solace_get_dmr_bridges:
       host: "{{ sempv2_host }}"
       port: "{{ sempv2_port }}"
@@ -96,6 +110,8 @@
       name: dmr_topology
   vars:
       dmr_cluster_link_trusted_cn: "*.messaging.solace.cloud"
+      dmr_cluster_link_attribute_name: "asct-test-attribute"
+      dmr_cluster_link_attribute_value: "asct-test-value"
 
   tasks:
     - name: "main: check vars"

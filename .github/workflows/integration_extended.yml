@@ -1,4 +1,4 @@
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 name: integration_tests_extended
@@ -25,18 +25,22 @@ env:
 
 jobs:
   integration_tests_extended:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
       matrix:
-        python-version: [ '3.8' ]
-        ansible-version: [ 'ansible>=2.11,<2.12', 'ansible>=2.10.3,<2.11', 'ansible>=2.12' ]
+        python-version: [ '3.13' ]
+        ansible-version: [
+          "ansible>=14.0.0,<15.0.0", # this is core 2.21
+          "ansible>=13.0.0,<14.0.0", # this is core 2.20
+          "ansible>=12.0.0,<13.0.0", # this is core 2.19
+        ]
     steps:
       - name: Check Auth
         if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke'
         run: |
           echo "not authorized"
-          echo '::set-output name=IS_AUTHORIZED::false'
+          echo "IS_AUTHORIZED=false" >> $GITHUB_OUTPUT
         id: auth
       - name: Cancel Workflow
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
@@ -65,12 +69,12 @@ jobs:
           echo "github.event_name=${{ github.event_name }}"
 
       - name: Checkout Current Branch
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -134,7 +138,7 @@ jobs:
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.TEST_TEST_RUNNER_LOGS_NAME }}
           path: ${{ github.workspace }}/${{ env.TEST_RUNNER_LOGS_DIR }}

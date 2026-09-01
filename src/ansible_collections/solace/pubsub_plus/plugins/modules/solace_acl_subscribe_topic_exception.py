@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -18,8 +18,10 @@ description:
 - "Configure a subscribe topic exception object for an ACL Profile."
 - "Allows addition and removal of a subscribe topic exception object for an ACL Profile."
 notes:
-- "Module Sempv2 Config (>=2.14): https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/createMsgVpnAclProfileSubscribeTopicException"
-- "Module Sempv2 Config (<=2.13): https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/createMsgVpnAclProfileSubscribeException"
+- "Module Sempv2 Config (>=2.14): https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/\
+  createMsgVpnAclProfileSubscribeTopicException"
+- "Module Sempv2 Config (<=2.13): https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/\
+  createMsgVpnAclProfileSubscribeException"
 options:
   name:
     description: The name (topic) of the subscribe topic exception. Maps to 'subscribeTopicException' in the SEMP v2 API.
@@ -44,9 +46,9 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.state
 - solace.pubsub_plus.solace.sempv2_settings
 seealso:
-- module: solace_acl_profile
-- module: solace_acl_subscribe_topic_exceptions
-- module: solace_get_acl_subscribe_topic_exceptions
+- module: solace.pubsub_plus.solace_acl_profile
+- module: solace.pubsub_plus.solace_acl_subscribe_topic_exceptions
+- module: solace.pubsub_plus.solace_get_acl_subscribe_topic_exceptions
 author:
   - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -120,7 +122,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_utils import SolaceUtils
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api

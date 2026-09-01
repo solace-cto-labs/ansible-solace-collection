@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -15,13 +15,14 @@ DOCUMENTATION = '''
 module: solace_cloud_get_facts
 short_description: get Solace Cloud service facts
 description:
-- Convenience functions to access Solace Cloud service facts gathered with M(solace_cloud_get_service) or returned by M(solace_cloud_service).
+- Convenience functions to access Solace Cloud service facts gathered with M(solace.pubsub_plus.solace_cloud_get_service) or returned by
+  M(solace.pubsub_plus.solace_cloud_service).
 - Always returns the state of the service in `facts.serviceState`.
 options:
   from_dict:
     description: >
       The JSON object (dict) which holds the service facts.
-      Could be the result of M(solace_cloud_get_service) or M(solace_cloud_service) (state=present).
+      Could be the result of M(solace.pubsub_plus.solace_cloud_get_service) or M(solace.pubsub_plus.solace_cloud_service) (state=present).
     required: True
     type: dict
   get_formattedHostInventory:
@@ -71,10 +72,10 @@ options:
         type: dict
         required: true
 seealso:
-- module: solace_cloud_get_service
-- module: solace_cloud_service
-- module: solace_gather_facts
-- module: solace_get_facts
+- module: solace.pubsub_plus.solace_cloud_get_service
+- module: solace.pubsub_plus.solace_cloud_service
+- module: solace.pubsub_plus.solace_gather_facts
+- module: solace.pubsub_plus.solace_get_facts
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -293,7 +294,7 @@ facts:
                     vpn: asc_test_1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceReadFactsTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_facts import SolaceCloudBrokerFacts
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceError, SolaceParamsValidationError
@@ -473,7 +474,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=arg_spec,
-        supports_check_mode=False
+        supports_check_mode=True
     )
 
     solace_task = SolaceCloudGetFactsTask(module)

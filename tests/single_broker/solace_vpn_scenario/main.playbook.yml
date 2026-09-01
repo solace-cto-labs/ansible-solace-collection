@@ -1,0 +1,194 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+#
+# End-to-end scenario on a self-hosted broker: create a Message VPN and, within it, an
+# ACL profile (+ exceptions), a client profile, a client username and a queue (+ topic
+# subscriptions); verify each; then tear everything down.
+#
+# Connection comes from the standard inventory vars (sempv2_*). Object names are
+# parameterized (override via -e or inventory if desired).
+
+-
+  name: "main: solace_vpn_scenario"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  # object names default to these; override with -e scenario_vpn=... etc.
+  vars:
+    scenario_vpn: test_vpn
+    scenario_acl_profile: test_acl
+    scenario_client_profile: test_cp
+    scenario_client_username: test_user
+    scenario_queue: test_q
+  module_defaults:
+    # broker-scoped (no msg_vpn)
+    solace.pubsub_plus.solace_vpn: &broker
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+    solace.pubsub_plus.solace_get_vpns: *broker
+    # vpn-scoped (the newly created scenario vpn)
+    solace.pubsub_plus.solace_acl_profile: &vpnc
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ scenario_vpn }}"
+    solace.pubsub_plus.solace_acl_publish_topic_exception: *vpnc
+    solace.pubsub_plus.solace_acl_subscribe_topic_exception: *vpnc
+    solace.pubsub_plus.solace_acl_subscribe_share_name_exception: *vpnc
+    solace.pubsub_plus.solace_acl_client_connect_exception: *vpnc
+    solace.pubsub_plus.solace_client_profile: *vpnc
+    solace.pubsub_plus.solace_client_username: *vpnc
+    solace.pubsub_plus.solace_queue: *vpnc
+    solace.pubsub_plus.solace_queue_subscriptions: *vpnc
+    solace.pubsub_plus.solace_get_acl_profiles: *vpnc
+    solace.pubsub_plus.solace_get_client_profiles: *vpnc
+    solace.pubsub_plus.solace_get_client_usernames: *vpnc
+    solace.pubsub_plus.solace_get_queues: *vpnc
+    solace.pubsub_plus.solace_get_queue_subscriptions: *vpnc
+  tasks:
+    # ---------------- 1. Message VPN ----------------
+    - name: "1. create message vpn"
+      solace_vpn:
+        name: "{{ scenario_vpn }}"
+        settings:
+          enabled: true
+          maxMsgSpoolUsage: 100
+          authenticationBasicType: internal
+        state: present
+
+    # ---------------- 2. ACL profile + exceptions ----------------
+    - name: "2. create acl profile"
+      solace_acl_profile:
+        name: "{{ scenario_acl_profile }}"
+        settings:
+          clientConnectDefaultAction: disallow
+          publishTopicDefaultAction: disallow
+          subscribeTopicDefaultAction: disallow
+        state: present
+
+    - name: "2a. acl publish topic exception"
+      solace_acl_publish_topic_exception:
+        acl_profile_name: "{{ scenario_acl_profile }}"
+        topic: "test/pub/>"
+        state: present
+
+    - name: "2b. acl subscribe topic exception"
+      solace_acl_subscribe_topic_exception:
+        acl_profile_name: "{{ scenario_acl_profile }}"
+        topic: "test/sub/>"
+        state: present
+
+    - name: "2c. acl subscribe share name exception"
+      solace_acl_subscribe_share_name_exception:
+        acl_profile_name: "{{ scenario_acl_profile }}"
+        name: "test-share"
+        state: present
+
+    - name: "2d. acl client connect exception"
+      solace_acl_client_connect_exception:
+        acl_profile_name: "{{ scenario_acl_profile }}"
+        name: "192.168.0.0/16"
+        state: present
+
+    # ---------------- 3. Client profile ----------------
+    - name: "3. create client profile"
+      solace_client_profile:
+        name: "{{ scenario_client_profile }}"
+        settings:
+          allowGuaranteedMsgSendEnabled: true
+          allowGuaranteedMsgReceiveEnabled: true
+          allowGuaranteedEndpointCreateEnabled: true
+        state: present
+
+    # ---------------- 4. Client username ----------------
+    - name: "4. create client username"
+      solace_client_username:
+        name: "{{ scenario_client_username }}"
+        settings:
+          enabled: true
+          password: "{{ scenario_client_username }}_pw"
+          aclProfileName: "{{ scenario_acl_profile }}"
+          clientProfileName: "{{ scenario_client_profile }}"
+        state: present
+
+    # ---------------- 5. Queue + subscriptions ----------------
+    - name: "5. create queue"
+      solace_queue:
+        name: "{{ scenario_queue }}"
+        settings:
+          accessType: exclusive
+          egressEnabled: true
+          ingressEnabled: true
+          permission: consume
+          maxMsgSpoolUsage: 10
+        state: present
+
+    - name: "5a. add topic subscriptions to queue"
+      solace_queue_subscriptions:
+        queue_name: "{{ scenario_queue }}"
+        subscription_topics:
+          - "test/pub/>"
+          - "test/sub/orders/>"
+        state: present
+
+    # ---------------- verify ----------------
+    - name: "verify: vpn"
+      solace_get_vpns:
+        query_params:
+          where: ["msgVpnName=={{ scenario_vpn }}"]
+      register: r
+    - assert: {that: ["r.rc==0", "r.result_list_count==1"]}
+
+    - name: "verify: acl profile"
+      solace_get_acl_profiles:
+        query_params: {where: ["aclProfileName=={{ scenario_acl_profile }}"]}
+      register: r
+    - assert: {that: ["r.rc==0", "r.result_list_count==1"]}
+
+    - name: "verify: client profile"
+      solace_get_client_profiles:
+        query_params: {where: ["clientProfileName=={{ scenario_client_profile }}"]}
+      register: r
+    - assert: {that: ["r.rc==0", "r.result_list_count==1"]}
+
+    - name: "verify: client username"
+      solace_get_client_usernames:
+        query_params: {where: ["clientUsername=={{ scenario_client_username }}"]}
+      register: r
+    - assert: {that: ["r.rc==0", "r.result_list_count==1"]}
+
+    - name: "verify: queue"
+      solace_get_queues:
+        query_params: {where: ["queueName=={{ scenario_queue }}"]}
+      register: r
+    - assert: {that: ["r.rc==0", "r.result_list_count==1"]}
+
+    - name: "verify: queue subscriptions"
+      solace_get_queue_subscriptions:
+        queue_name: "{{ scenario_queue }}"
+      register: r
+    - assert: {that: ["r.rc==0", "r.result_list_count==2"]}
+
+    # ---------------- teardown ----------------
+    - name: "teardown: queue"
+      solace_queue: {name: "{{ scenario_queue }}", state: absent}
+    - name: "teardown: client username"
+      solace_client_username: {name: "{{ scenario_client_username }}", state: absent}
+    - name: "teardown: client profile"
+      solace_client_profile: {name: "{{ scenario_client_profile }}", state: absent}
+    - name: "teardown: acl profile"
+      solace_acl_profile: {name: "{{ scenario_acl_profile }}", state: absent}
+    - name: "teardown: message vpn"
+      solace_vpn: {name: "{{ scenario_vpn }}", state: absent}
+
+###
+# The End.

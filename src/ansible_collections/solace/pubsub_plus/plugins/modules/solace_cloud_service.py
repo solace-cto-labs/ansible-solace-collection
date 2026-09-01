@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -17,7 +17,8 @@ short_description: manage Solace Cloud services
 description:
 - Create & delete Solace Cloud services.
 - "Note that you can't change a service once it has been created. Only option: delete & re-create."
-- "Note that a service name must be unique in the global Solace Cloud namespace. Creating a service using an existing name (regardless in which account) will fail."
+- "Note that a service name must be unique in the global Solace Cloud namespace. Creating a service using an existing name (regardless in which account)
+  will fail."
 - Creating a service in Solace Cloud is a long-running process. In case creation fails, module will delete the service and try again, up to 3 times.
 - >
     The module operates at a Solace Cloud Account level, therefor, you don't necessarily require an inventory file.
@@ -49,7 +50,7 @@ options:
     default: 30
   solace_cloud_settings:
     description:
-    - Additional settings for state=present. See Reference documentation output of M(solace_cloud_get_service) for details.
+    - Additional settings for state=present. See Reference documentation output of M(solace.pubsub_plus.solace_cloud_get_service) for details.
     - "Note: For state=present, provide at least: msgVpnName, datacenterId, serviceTypeId, serviceClassId."
     type: dict
     required: false
@@ -58,9 +59,9 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.solace_cloud_config_solace_cloud
 - solace.pubsub_plus.solace.state
 seealso:
-- module: solace_cloud_get_service
-- module: solace_cloud_get_services
-- module: solace_cloud_get_facts
+- module: solace.pubsub_plus.solace_cloud_get_service
+- module: solace.pubsub_plus.solace_cloud_get_services
+- module: solace.pubsub_plus.solace_cloud_get_facts
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -196,14 +197,13 @@ msg:
     returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceCloudCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskSolaceCloudServiceConfig
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceCloudApi
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceParamsValidationError, SolaceError
 from ansible.module_utils.basic import AnsibleModule
 import logging
-import json
 
 
 class SolaceCloudServiceTask(SolaceCloudCRUDTask):

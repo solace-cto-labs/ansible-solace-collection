@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -20,7 +20,8 @@ description:
 notes:
 - "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/clientProfile"
 - "Module Solace Cloud API: https://docs.solace.com/Solace-Cloud/ght_use_rest_api_client_profiles.htm"
-- "Known Issue: Solace Cloud API does not return values for 'eventClientProvisionedEndpointSpoolUsageThreshold'. To ensure correct settings, add them to the `settings` dict."
+- "Known Issue: Solace Cloud API does not return values for 'eventClientProvisionedEndpointSpoolUsageThreshold'. To ensure correct settings, add them to the
+  `settings` dict."
 options:
   name:
     description: Name of the client profile. Maps to 'clientProfileName' in the API.
@@ -33,8 +34,8 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.broker_config_solace_cloud_mandatory
 - solace.pubsub_plus.solace.solace_cloud_settings
 seealso:
-- module: solace_client_profile
-- module: solace_get_client_profiles
+- module: solace.pubsub_plus.solace_client_profile
+- module: solace.pubsub_plus.solace_get_client_profiles
 author:
   - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -116,7 +117,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_utils import SolaceUtils
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_consts import SolaceTaskOps

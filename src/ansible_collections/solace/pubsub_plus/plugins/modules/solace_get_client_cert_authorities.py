@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2022, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -18,20 +18,22 @@ description:
 - "Get a list of Client Certificate objects configured on a service."
 - "Supports standalone brokers and Solace Cloud."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/clientCertAuthority/getClientCertAuthorities"
-- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/clientCertAuthority/getClientCertAuthorities"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/clientCertAuthority/\
+  getClientCertAuthorities"
+- "Module Sempv2 Monitor: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/monitor/index.html#/clientCertAuthority/\
+  getClientCertAuthorities"
 extends_documentation_fragment:
 - solace.pubsub_plus.solace.broker
 - solace.pubsub_plus.solace.get_list
 - solace.pubsub_plus.solace.broker_config_solace_cloud
 seealso:
-- module: solace_client_cert_authority
+- module: solace.pubsub_plus.solace_client_cert_authority
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
 
 EXAMPLES = '''
-# Copyright (c) 2022, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2022, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 -
@@ -186,12 +188,11 @@ msg:
   returned: error
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerGetPagingTask, SolaceTask, SolaceCloudGetTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceCloudApiCertAuthority
 from ansible.module_utils.basic import AnsibleModule
-import re
 
 
 class SolaceCloudGetClientCertAuthoritiesTask(SolaceCloudGetTask):

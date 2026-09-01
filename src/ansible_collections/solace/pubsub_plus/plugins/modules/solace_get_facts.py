@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -15,7 +15,8 @@ DOCUMENTATION = '''
 module: solace_get_facts
 short_description: get facts for a broker/vpn
 description:
-- Provides convenience functions to access solace facts retrieved from broker service using M(solace_gather_facts) from 'ansible_facts.solace'.
+- Provides convenience functions to access solace facts retrieved from broker service using M(solace.pubsub_plus.solace_gather_facts) from
+  'ansible_facts.solace'.
 notes:
 - In order to access other hosts' facts (other than the current 'inventory_host'), you must not use the 'serial' strategy for the playbook.
 options:
@@ -78,8 +79,8 @@ options:
             type: str
             required: no
 seealso:
-- module: solace_gather_facts
-- module: solace_cloud_get_facts
+- module: solace.pubsub_plus.solace_gather_facts
+- module: solace.pubsub_plus.solace_cloud_get_facts
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -443,7 +444,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceReadFactsTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_facts import SolaceBrokerFacts, SolaceCloudBrokerFacts, SolaceSelfHostedBrokerFacts
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceParamsValidationError
@@ -570,7 +571,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=arg_spec,
-        supports_check_mode=False
+        supports_check_mode=True
     )
 
     solace_task = SolaceGetFactsTask(module)

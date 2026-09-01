@@ -35,12 +35,12 @@
       secure_broker_url: "http://{{ sempv2_host }}:{{ sempv2_port_secure }}"
 
   - name: "Docker Compose up"
-    community.general.docker_compose:
+    community.docker.docker_compose_v2:
       project_src: "{{ docker_compose_path }}"
       files:
         - "{{ docker_compose_file }}"
       state: present
-      restarted: yes
+      recreate: always
     environment:
       BROKER_DOCKER_IMAGE: "{{ BROKER_DOCKER_IMAGE }}"
       HOST_MOUNT_PATH_SECRETS_DIR: "{{ secretsMountPathDir }}"
@@ -93,7 +93,7 @@
     register: result
 
   - name: "Docker Compose down"
-    community.general.docker_compose:
+    community.docker.docker_compose_v2:
       project_src: "{{ docker_compose_path }}"
       files:
         - "{{ docker_compose_file }}"

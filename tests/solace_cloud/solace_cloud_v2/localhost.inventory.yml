@@ -1,0 +1,15 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+#
+# No secrets here. The Solace Cloud API token and account-specific ids are read at
+# runtime from environment variables by the playbooks (via lookup('env', ...)):
+#   SOLACE_CLOUD_API_TOKEN               (required)
+#   SOLACE_CLOUD_SERVICE_ID              (required)
+#   SOLACE_CLOUD_CONNECTION_ENDPOINT_ID  (required for the hostnames test)
+#   SOLACE_CLOUD_HOME                    (optional, default 'us')
+#   SOLACE_CLOUD_SERVICE_NAME            (optional, enables the service read test)
+---
+all:
+  hosts:
+    localhost:
+      ansible_connection: local

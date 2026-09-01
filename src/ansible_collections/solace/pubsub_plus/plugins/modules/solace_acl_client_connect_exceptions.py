@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -16,13 +16,15 @@ module: solace_acl_client_connect_exceptions
 short_description: list of client connect address exceptions on an acl profile
 description:
 - "Configure a list of Client Connect Address Exception objects on an ACL Profile in a single transaction."
-- "Allows addition and removal of a list of Client Connect Address Exception objects as well as replacement of all existing Client Connect Address Exception objects on an ACL Profile."
+- "Allows addition and removal of a list of Client Connect Address Exception objects as well as replacement of all existing Client Connect Address Exception
+  objects on an ACL Profile."
 - "Supports 'transactional' behavior with rollback to original list in case of error."
 - "De-duplicates Client Connect Address Exception object list."
 - "Reports which addresses were added, deleted and omitted (duplicates). In case of an error, reports the invalid Client Connect Address Exception object."
 - "To delete all Client Connect Address Exception objects, use state='exactly' with an empty/null list (see examples)."
 notes:
-- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/createMsgVpnAclProfileClientConnectException"
+- "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/aclProfile/\
+  createMsgVpnAclProfileClientConnectException"
 options:
   names:
     description: The client addresses. Maps to 'clientConnectExceptionAddress' in the SEMP v2 API.
@@ -40,9 +42,9 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state_crud_list
 seealso:
-- module: solace_acl_profile
-- module: solace_acl_client_connect_exception
-- module: solace_get_acl_client_connect_exceptions
+- module: solace.pubsub_plus.solace_acl_profile
+- module: solace.pubsub_plus.solace_acl_client_connect_exception
+- module: solace.pubsub_plus.solace_get_acl_client_connect_exceptions
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -174,7 +176,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDListTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig

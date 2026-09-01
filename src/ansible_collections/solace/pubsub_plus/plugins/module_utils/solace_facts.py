@@ -1,13 +1,13 @@
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import SolaceInternalErrorAbstractMethod, SolaceApiError, SolaceInternalError, SolaceFeatureNotSupportedError, SolaceModuleUsageError
-import json
-import logging
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
+from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_error import (
+    SolaceInternalErrorAbstractMethod, SolaceInternalError, SolaceFeatureNotSupportedError,
+    SolaceModuleUsageError)
 from urllib.parse import urlparse
 
 
@@ -265,15 +265,18 @@ class SolaceCloudBrokerFacts(SolaceBrokerFacts):
             formatted_res['enabled'] = True
         if smf_client_connection_details['plain']['enabled']:
             formatted_res.update({
-                "plain": smf_client_connection_details['plain']['uri_components']['host'] + ":" + str(smf_client_connection_details['plain']['uri_components']['port'])
+                "plain": smf_client_connection_details['plain']['uri_components']['host'] + ":"
+                + str(smf_client_connection_details['plain']['uri_components']['port'])
             })
         if smf_client_connection_details['compressed']['enabled']:
             formatted_res.update({
-                "compressed": smf_client_connection_details['compressed']['uri_components']['host'] + ":" + str(smf_client_connection_details['compressed']['uri_components']['port'])
+                "compressed": smf_client_connection_details['compressed']['uri_components']['host'] + ":"
+                + str(smf_client_connection_details['compressed']['uri_components']['port'])
             })
         if smf_client_connection_details['secured']['enabled']:
             formatted_res.update({
-                "secured": smf_client_connection_details['secured']['uri_components']['host'] + ":" + str(smf_client_connection_details['secured']['uri_components']['port'])
+                "secured": smf_client_connection_details['secured']['uri_components']['host'] + ":"
+                + str(smf_client_connection_details['secured']['uri_components']['port'])
             })
         return formatted_res
 

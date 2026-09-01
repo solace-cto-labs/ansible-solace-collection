@@ -14,11 +14,11 @@ default_generate:
     virtual_router: primary
 default_docker_compose_settings:
   project_name: "{{ args.__required__ }}"
-  restarted: yes
+  # note: docker_compose_v2 has no 'restarted' option; 'recreate: always' recreates
+  # (and thus restarts) the containers on every run, preserving the previous behaviour.
   recreate: always
   state: present
   definition:
-    version: '3.3'
     services:
       primary:
         container_name: PubSubStandard_singleNode
@@ -27,8 +27,8 @@ default_docker_compose_settings:
         ulimits:
           core: 2
           nofile:
-            soft: 2448
-            hard: 38048
+            soft: 4096
+            hard: 1048576
         deploy:
           restart_policy:
             condition: on-failure
@@ -38,9 +38,9 @@ default_docker_compose_settings:
         #container.  This may result in port collisions on commonly used
         #ports that will cause failure of the container to start.
           #Web transport
-          - '80:80'
+          - '8008:8008'
           #Web transport over TLS
-          - '443:443'
+          - '1443:1443'
           #MQTT Default VPN
           - '1883:1883'
           #AMQP Default VPN over TLS
@@ -55,7 +55,7 @@ default_docker_compose_settings:
           - '8883:8883'
           #SEMP over TLS
           # - "1943:1943"
-          #SEMP / PubSub+ Manager
+          #SEMP / Broker Manager
           - "{{ combined_generate.inventory_settings.sempv2_port }}:8080"
           #REST Default VPN
           - '9000:9000'
@@ -70,7 +70,9 @@ default_docker_compose_settings:
         environment:
           - "username_admin_globalaccesslevel={{ combined_generate.inventory_settings.sempv2_username }}"
           - "username_admin_password={{ combined_generate.inventory_settings.sempv2_password }}"
-          - system_scaling_maxconnectioncount=100
+          - system_scaling_maxconnectioncount=1000
+          - system_scaling_maxkafkabridgecount=10
+          - system_scaling_maxkafkabrokerconnectioncount=300
 default_result:
   broker_service:
     inventory: null

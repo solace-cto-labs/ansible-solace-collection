@@ -1,0 +1,137 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# NOTE: these are broker-global OAuth profile objects (no msg_vpn), used for
+# management/SEMP access. Requires a broker version that supports /oauthProfiles.
+
+-
+  name: "main: solace_oauth_profile (broker)"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace.pubsub_plus.solace_oauth_profile: &bc
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+    solace.pubsub_plus.solace_oauth_profile_access_group: *bc
+    solace.pubsub_plus.solace_oauth_profile_access_group_vpn_exception: *bc
+    solace.pubsub_plus.solace_oauth_profile_client_allowed_host: *bc
+    solace.pubsub_plus.solace_oauth_profile_client_authz_param: *bc
+    solace.pubsub_plus.solace_oauth_profile_client_required_claim: *bc
+    solace.pubsub_plus.solace_oauth_profile_default_vpn_exception: *bc
+    solace.pubsub_plus.solace_oauth_profile_resource_server_required_claim: *bc
+  vars:
+    profile: "asct_broker_oauth"
+    access_group: "asct_group"
+  tasks:
+    - name: "clean start"
+      solace_oauth_profile:
+        name: "{{ profile }}"
+        state: absent
+
+    - name: "add oauth profile"
+      solace_oauth_profile:
+        name: "{{ profile }}"
+        settings:
+          enabled: false
+        state: present
+
+    - name: "add access group"
+      solace_oauth_profile_access_group:
+        name: "{{ access_group }}"
+        oauth_profile_name: "{{ profile }}"
+        state: present
+
+    - name: "add access group vpn exception"
+      solace_oauth_profile_access_group_vpn_exception:
+        name: "{{ vpn }}"
+        access_group_name: "{{ access_group }}"
+        oauth_profile_name: "{{ profile }}"
+        state: present
+
+    - name: "add client allowed host"
+      solace_oauth_profile_client_allowed_host:
+        name: "https://asct-app.example.com"
+        oauth_profile_name: "{{ profile }}"
+        state: present
+
+    - name: "add client authorization parameter"
+      solace_oauth_profile_client_authz_param:
+        name: "asct_param"
+        oauth_profile_name: "{{ profile }}"
+        settings:
+          authorizationParameterValue: "asct-value"
+        state: present
+
+    - name: "add client required claim"
+      solace_oauth_profile_client_required_claim:
+        name: "asct_client_claim"
+        oauth_profile_name: "{{ profile }}"
+        settings:
+          clientRequiredClaimValue: '"asct-value"'
+        state: present
+
+    - name: "add default vpn exception"
+      solace_oauth_profile_default_vpn_exception:
+        name: "{{ vpn }}"
+        oauth_profile_name: "{{ profile }}"
+        state: present
+
+    - name: "add resource server required claim"
+      solace_oauth_profile_resource_server_required_claim:
+        name: "asct_rs_claim"
+        oauth_profile_name: "{{ profile }}"
+        settings:
+          resourceServerRequiredClaimValue: '"asct-value"'
+        state: present
+
+    # teardown (children before parent; vpn-exception before its access group)
+    - name: "remove access group vpn exception"
+      solace_oauth_profile_access_group_vpn_exception:
+        name: "{{ vpn }}"
+        access_group_name: "{{ access_group }}"
+        oauth_profile_name: "{{ profile }}"
+        state: absent
+    - name: "remove access group"
+      solace_oauth_profile_access_group:
+        name: "{{ access_group }}"
+        oauth_profile_name: "{{ profile }}"
+        state: absent
+    - name: "remove client allowed host"
+      solace_oauth_profile_client_allowed_host:
+        name: "https://asct-app.example.com"
+        oauth_profile_name: "{{ profile }}"
+        state: absent
+    - name: "remove client authorization parameter"
+      solace_oauth_profile_client_authz_param:
+        name: "asct_param"
+        oauth_profile_name: "{{ profile }}"
+        state: absent
+    - name: "remove client required claim"
+      solace_oauth_profile_client_required_claim:
+        name: "asct_client_claim"
+        oauth_profile_name: "{{ profile }}"
+        state: absent
+    - name: "remove default vpn exception"
+      solace_oauth_profile_default_vpn_exception:
+        name: "{{ vpn }}"
+        oauth_profile_name: "{{ profile }}"
+        state: absent
+    - name: "remove resource server required claim"
+      solace_oauth_profile_resource_server_required_claim:
+        name: "asct_rs_claim"
+        oauth_profile_name: "{{ profile }}"
+        state: absent
+    - name: "remove oauth profile"
+      solace_oauth_profile:
+        name: "{{ profile }}"
+        state: absent
+
+###
+# The End.

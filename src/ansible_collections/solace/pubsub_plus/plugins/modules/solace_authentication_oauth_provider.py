@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
+                    'status': ['deprecated'],
                     'supported_by': 'community'}
 
 DOCUMENTATION = '''
@@ -16,6 +16,10 @@ module: solace_authentication_oauth_provider
 short_description: oauth provider
 description:
 - "Configure a Authentication OAuth Provider object on a Message Vpn. Allows addition, removal and configuration of objects in an idempotent manner."
+deprecated:
+  removed_in: 2.0.0
+  why: "The broker deprecated the 'authenticationOauthProvider' SEMP object in favor of the 'authenticationOauthProfile' object."
+  alternative: "Use M(solace.pubsub_plus.solace_authentication_oauth_profile) instead."
 notes:
 - "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/authenticationOauthProvider"
 options:
@@ -30,7 +34,7 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state
 seealso:
-- module: solace_get_authentication_oauth_providers
+- module: solace.pubsub_plus.solace_get_authentication_oauth_providers
 author:
 - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -92,7 +96,7 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig

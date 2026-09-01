@@ -1,0 +1,59 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+-
+  name: "solace_client_username_attribute"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace.pubsub_plus.solace_client_username: &sc
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace.pubsub_plus.solace_client_username_attribute: *sc
+    solace.pubsub_plus.solace_get_client_username_attributes: *sc
+  vars:
+    client_username: "asct-client"
+  tasks:
+    - name: "create client username"
+      solace_client_username:
+        name: "{{ client_username }}"
+        state: present
+
+    - name: "add attribute"
+      solace_client_username_attribute:
+        name: "asct-attribute"
+        value: "asct-value"
+        client_username: "{{ client_username }}"
+        state: present
+
+    - name: "get attributes"
+      solace_get_client_username_attributes:
+        client_username: "{{ client_username }}"
+      register: result
+    - assert:
+        that:
+          - result.rc == 0
+          - result.result_list_count == 1
+
+    - name: "remove attribute"
+      solace_client_username_attribute:
+        name: "asct-attribute"
+        value: "asct-value"
+        client_username: "{{ client_username }}"
+        state: absent
+
+    - name: "remove client username"
+      solace_client_username:
+        name: "{{ client_username }}"
+        state: absent
+
+###
+# The End.

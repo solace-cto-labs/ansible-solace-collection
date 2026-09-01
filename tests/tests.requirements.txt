@@ -1,1 +1,4 @@
-docker-compose
+# No Python packages required for the docker-based tests.
+# The tests use community.docker.docker_compose_v2, which requires the Docker CLI
+# with the Compose V2 plugin (docker compose) - not the End-of-Life 'docker-compose'
+# (v1) Python package.

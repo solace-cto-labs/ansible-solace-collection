@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-scriptDir=$(cd $(dirname "$0") && pwd);
-scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
+scriptDir=$(cd "$(dirname "$0")" && pwd);
+scriptName=$(basename "$(test -L "$0" && readlink "$0" || echo "$0")");
 testTarget=${scriptDir##*/}
 if [ -z "$testTargetGroup" ]; then echo ">>> XT_ERROR: - $scriptLogName - missing env var: testTargetGroup"; exit 1; fi
 scriptLogName="$testTargetGroup.$testTarget.$scriptName"

@@ -1,0 +1,86 @@
+# Copyright (c) 2026, Solace Corporation, Paulus Gunadi
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+#
+# Tests solace_cloud_service_hostname_v2 (singular) and solace_cloud_service_hostnames_v2
+# (plural) against an existing Solace Cloud service's connection endpoint.
+# Sensitive/account data is read from the environment - nothing is stored in the repo.
+#
+# The hostname defaults to a Solace-managed name (*.messaging.solace.cloud) which does
+# not require a custom certificate. Adding a custom-domain FQDN would require a custom
+# server certificate installed on the service first.
+
+-
+  name: "solace_cloud_service_hostname(s)_v2"
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  vars:
+    solace_cloud_api_token: "{{ lookup('env', 'SOLACE_CLOUD_API_TOKEN') }}"
+    solace_cloud_home: "{{ lookup('env', 'SOLACE_CLOUD_HOME') | default('us', true) }}"
+    solace_cloud_service_id: "{{ lookup('env', 'SOLACE_CLOUD_SERVICE_ID') }}"
+    connection_endpoint_id: "{{ lookup('env', 'SOLACE_CLOUD_CONNECTION_ENDPOINT_ID') }}"
+    hostname: "{{ lookup('env', 'SOLACE_CLOUD_TEST_HOSTNAME') | default('pgtestch1.messaging.solace.cloud', true) }}"
+  module_defaults:
+    solace.pubsub_plus.solace_cloud_service_hostname_v2: &sc
+      solace_cloud_api_token: "{{ solace_cloud_api_token }}"
+      solace_cloud_home: "{{ solace_cloud_home }}"
+      solace_cloud_service_id: "{{ solace_cloud_service_id }}"
+      connection_endpoint_id: "{{ connection_endpoint_id }}"
+      wait_timeout_minutes: 10
+    solace.pubsub_plus.solace_cloud_service_hostnames_v2: *sc
+  tasks:
+    - name: "check required environment"
+      assert:
+        that:
+          - solace_cloud_api_token | length > 0
+          - solace_cloud_service_id | length > 0
+          - connection_endpoint_id | length > 0
+        fail_msg: "set env vars SOLACE_CLOUD_API_TOKEN, SOLACE_CLOUD_SERVICE_ID, SOLACE_CLOUD_CONNECTION_ENDPOINT_ID"
+
+    - name: "singular: clean start"
+      solace_cloud_service_hostname_v2:
+        name: "{{ hostname }}"
+        state: absent
+
+    - name: "singular: add"
+      solace_cloud_service_hostname_v2:
+        name: "{{ hostname }}"
+        state: present
+
+    - name: "singular: idempotency (add again)"
+      solace_cloud_service_hostname_v2:
+        name: "{{ hostname }}"
+        state: present
+      register: idem
+    - assert:
+        that:
+          - idem.changed == false
+
+    - name: "singular: remove"
+      solace_cloud_service_hostname_v2:
+        name: "{{ hostname }}"
+        state: absent
+      register: rm
+    - assert:
+        that:
+          - rm.changed == true
+
+    - name: "plural: set exactly [hostname] (must not touch the system default)"
+      solace_cloud_service_hostnames_v2:
+        names:
+          - "{{ hostname }}"
+        state: exactly
+      register: r
+    - assert:
+        that:
+          - r.changed == true
+
+    - name: "plural: delete all (custom hostnames)"
+      solace_cloud_service_hostnames_v2:
+        names: []
+        state: exactly
+
+###
+# The End.

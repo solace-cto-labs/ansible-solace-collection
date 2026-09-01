@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2020, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 name: publish release
@@ -19,15 +19,14 @@ env:
 jobs:
   publish_release:
     concurrency: ci-${{ github.ref }}
-    # runs-on: ubuntu-18.04
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     strategy:
       max-parallel: 1
       matrix:
-        python-version: [ '3.8' ]
-        ansible-version: [ 'ansible>=2.10.3,<2.11' ]
+        python-version: [ '3.13' ]
+        ansible-version: [ 'ansible>=14.0.0,<15.0.0' ] # this is core 2.21
     steps:
       - name: Check Auth
         if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke'
@@ -40,12 +39,12 @@ jobs:
         uses: andymckay/cancel-action@0.2
 
       - name: Checkout Current Branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
 
       - name: setup python matrix version
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -113,7 +112,7 @@ jobs:
 
       - name: Archive logs
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED != 'false' && github.event_name == 'workflow_dispatch' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.TEST_TEST_RUNNER_LOGS_NAME }}
           path: ${{ github.workspace }}/${{ env.TEST_RUNNER_LOGS_DIR }}

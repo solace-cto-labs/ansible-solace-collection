@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke, <ricardo.gomez-ulmke@solace.com>
+# Copyright (c) 2021, Solace Corporation
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -15,7 +15,8 @@ DOCUMENTATION = '''
 module: solace_client_profile
 short_description: client profile for sempv2
 description:
-- "Configure a Client Profile object using the SEMPV2 API. Allows addition, removal and configuration of Client Profile objects on Solace Brokers in an idempotent manner."
+- "Configure a Client Profile object using the SEMPV2 API. Allows addition, removal and configuration of Client Profile objects on Solace Brokers in an
+  idempotent manner."
 - "Supports only Solace Standalone Brokers - i.e. the SEMPV2 API."
 notes:
 - "Module Sempv2 Config: https://docs.solace.com/API-Developer-Online-Ref-Documentation/swagger-ui/config/index.html#/clientProfile"
@@ -31,8 +32,8 @@ extends_documentation_fragment:
 - solace.pubsub_plus.solace.sempv2_settings
 - solace.pubsub_plus.solace.state
 seealso:
-- module: solace_get_client_profiles
-- module: solace_cloud_client_profile
+- module: solace.pubsub_plus.solace_get_client_profiles
+- module: solace.pubsub_plus.solace_cloud_client_profile
 author:
   - Ricardo Gomez-Ulmke (@rjgu)
 '''
@@ -98,11 +99,9 @@ rc:
             rc: 1
 '''
 
-from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_utils import SolaceUtils
+from ansible_collections.solace.pubsub_plus.plugins.module_utils import solace_sys  # pylint: disable=unused-import
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task import SolaceBrokerCRUDTask
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_consts import SolaceTaskOps
-from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api, SolaceCloudApi
+from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_api import SolaceSempV2Api
 from ansible_collections.solace.pubsub_plus.plugins.module_utils.solace_task_config import SolaceTaskBrokerConfig
 from ansible.module_utils.basic import AnsibleModule
 

@@ -1,1 +1,33 @@
-requires_ansible: ">=2.10,<=2.13"
+requires_ansible: ">=2.16,<2.22"
+plugin_routing:
+  modules:
+    solace_cert_authority:
+      deprecation:
+        removal_version: 2.0.0
+        warning_text: >-
+          solace_cert_authority is deprecated. The broker deprecated the 'certAuthority' SEMP object since version 2.19.
+          Use solace_client_cert_authority or solace_domain_cert_authority instead.
+    solace_dmr_cluster_link_trusted_cn:
+      deprecation:
+        removal_version: 2.0.0
+        warning_text: >-
+          solace_dmr_cluster_link_trusted_cn is deprecated. TLS Trusted Common Names were deprecated in favor of
+          Certificate Matching Rules. Use solace_dmr_cluster_cert_matching_rule and related modules instead.
+    solace_authentication_oauth_provider:
+      deprecation:
+        removal_version: 2.0.0
+        warning_text: >-
+          solace_authentication_oauth_provider is deprecated. The broker deprecated the 'authenticationOauthProvider'
+          SEMP object in favor of 'authenticationOauthProfile'. Use solace_authentication_oauth_profile instead.
+    solace_bridge_trusted_cn:
+      deprecation:
+        removal_version: 2.0.0
+        warning_text: >-
+          solace_bridge_trusted_cn is deprecated. TLS Trusted Common Names were deprecated in favor of
+          Certificate Matching Rules. Use solace_cert_matching_rule and related modules instead.
+    solace_rdp_rest_consumer_trusted_cn:
+      deprecation:
+        removal_version: 2.0.0
+        warning_text: >-
+          solace_rdp_rest_consumer_trusted_cn is deprecated. TLS Trusted Common Names were deprecated in favor of
+          Certificate Matching Rules. Use solace_cert_matching_rule and related modules instead.
