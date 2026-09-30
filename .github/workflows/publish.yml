@@ -36,15 +36,15 @@ jobs:
         id: auth
       - name: Cancel Workflow
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@8f8510d9dea52fcc8eb6ca10d6ce47fd5fc43cd8 # 0.2
 
       - name: Checkout Current Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.ref }}
 
       - name: setup python matrix version
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -84,7 +84,7 @@ jobs:
       - name: deploy gh pages
         env:
           BUILD_FOLDER_PATH: "${{ env.TEST_ANSIBLE_SOLACE_COLLECTION_DIR }}/docs/build/html"
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        uses: JamesIves/github-pages-deploy-action@8817a56e5bfec6e2b08345c81f4d422db53a2cdc # v4.3.3
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: ${{ env.BUILD_FOLDER_PATH }} # The folder the action should deploy.
@@ -112,7 +112,7 @@ jobs:
 
       - name: Archive logs
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED != 'false' && github.event_name == 'workflow_dispatch' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ env.TEST_TEST_RUNNER_LOGS_NAME }}
           path: ${{ github.workspace }}/${{ env.TEST_RUNNER_LOGS_DIR }}
